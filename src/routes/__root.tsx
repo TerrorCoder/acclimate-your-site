@@ -11,6 +11,9 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
+import { AskAI } from "@/components/AskAI";
+import { EnvironmentProvider } from "@/lib/env/EnvironmentProvider";
 
 function NotFoundComponent() {
   return (
@@ -77,11 +80,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Acclimate — Environmental intelligence for your day" },
+      {
+        name: "description",
+        content:
+          "Acclimate reads live weather, air quality and solar data and tells you what to actually do today.",
+      },
+      { name: "author", content: "Acclimate" },
+      { property: "og:title", content: "Acclimate — Environmental intelligence for your day" },
+      {
+        property: "og:description",
+        content: "Live environmental data, interpreted into practical daily decisions.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -119,8 +129,17 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <EnvironmentProvider>
+        <div className="flex min-h-screen flex-col">
+          <SiteHeader />
+          <main className="flex-1">
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </main>
+          <SiteFooter />
+        </div>
+        <AskAI />
+      </EnvironmentProvider>
     </QueryClientProvider>
   );
 }
