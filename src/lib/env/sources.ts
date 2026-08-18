@@ -150,32 +150,35 @@ interface OpenAQResponse {
 }
 
 /**
- * OpenAQ is attempted first. Its v3 API now requires a key for most consumers, so when it is
- * not reachable we fall back to Open-Meteo's air-quality service. Both are real measurements —
- * air-quality values are never fabricated, and when neither responds we say so.
+ * Air quality comes from real measurement networks. OpenAQ v3 now requires an API key and does
+ * not allow browser origins, so the station lookup only runs server-side; in the browser we use
+ * Open-Meteo's air-quality service, which publishes the same monitoring-network measurements.
+ * Values are never fabricated — when neither responds we say the data is unavailable.
  */
 export async function fetchAirQuality(lat: number, lon: number): Promise<AirQuality> {
-  try {
-    const params = new URLSearchParams({
-      coordinates: `${lat},${lon}`,
-      radius: "25000",
-      limit: "1",
-    });
-    const data = await getJson<OpenAQResponse>(
-      `https://api.openaq.org/v3/locations?${params}`,
-      5000,
-    );
-    const station = data.results?.[0];
-    if (station?.sensors?.length) {
-      // Station metadata found but v3 measurements require a key; use it for naming only.
-      const om = await fetchOpenMeteoAir(lat, lon, station.name);
-      if (om.available) return om;
+  if (typeof window === "undefined") {
+    try {
+      const params = new URLSearchParams({
+        coordinates: `${lat},${lon}`,
+        radius: "25000",
+        limit: "1",
+      });
+      const data = await getJson<OpenAQResponse>(
+        `https://api.openaq.org/v3/locations?${params}`,
+        5000,
+      );
+      const station = data.results?.[0];
+      if (station?.sensors?.length) {
+        const om = await fetchOpenMeteoAir(lat, lon, station.name);
+        if (om.available) return om;
+      }
+    } catch {
+      /* fall back */
     }
-  } catch {
-    /* fall back */
   }
   return fetchOpenMeteoAir(lat, lon);
 }
+
 
 async function fetchOpenMeteoAir(lat: number, lon: number, stationName?: string): Promise<AirQuality> {
   try {
