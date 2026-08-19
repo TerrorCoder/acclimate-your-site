@@ -7,13 +7,13 @@ export function FoodCard() {
   if (!data || isFetching) return <PanelSkeleton lines={4} />;
 
   return (
-    <section aria-labelledby="food" className="panel p-6 md:p-8">
+    <section aria-labelledby="food" className="panel p-4 md:p-4">
       <AiLabel>Food &amp; drink</AiLabel>
       <h2 id="food" className="display-md mt-1">
         What should I eat today?
       </h2>
       <p className="mt-1 text-sm text-muted-foreground">{data.mainConsideration}</p>
-      <ul className="mt-5 space-y-2.5">
+      <ul className="mt-3 space-y-2.5">
         {data.whatToDo.map((item) => (
           <li key={item} className="flex gap-2.5 text-sm">
             <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />

@@ -19,7 +19,7 @@ export function ActivityGrid() {
   const { data, isFetching } = useRecommendation("activity", { activity: selected ?? "" }, Boolean(selected));
 
   return (
-    <section aria-labelledby="what-can-you-do" className="space-y-6">
+    <section aria-labelledby="what-can-you-do" className="space-y-4">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h2 id="what-can-you-do" className="display-lg">
           What can you do today?
@@ -27,7 +27,7 @@ export function ActivityGrid() {
         <p className="text-sm text-muted-foreground">Pick one — the answer is built from live conditions.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
         {ACTIVITIES.map((activity) => {
           const active = selected === activity.name;
           return (
@@ -36,7 +36,7 @@ export function ActivityGrid() {
               type="button"
               aria-pressed={active}
               onClick={() => setSelected(active ? null : activity.name)}
-              className="panel-quiet group flex flex-col items-start gap-4 p-5 text-left transition-all duration-300 hover:-translate-y-0.5 hover:bg-surface-strong"
+              className="panel-quiet group flex items-center gap-2.5 p-3 text-left transition-all duration-300 hover:-translate-y-0.5 hover:bg-surface-strong"
               style={
                 active
                   ? {
@@ -48,7 +48,7 @@ export function ActivityGrid() {
             >
               <svg
                 viewBox="0 0 24 24"
-                className="h-6 w-6 opacity-80 transition-transform duration-300 group-hover:scale-110"
+                className="h-5 w-5 shrink-0 opacity-80 transition-transform duration-300 group-hover:scale-110"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.4"
@@ -57,7 +57,7 @@ export function ActivityGrid() {
               >
                 <path d={activity.icon} />
               </svg>
-              <span className="text-sm font-medium">{activity.name}</span>
+              <span className="truncate text-sm font-medium">{activity.name}</span>
             </button>
           );
         })}

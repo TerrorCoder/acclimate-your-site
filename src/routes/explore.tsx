@@ -43,7 +43,7 @@ function ExplorePage() {
   );
 
   return (
-    <div className="mx-auto max-w-7xl space-y-12 px-5 py-16 md:px-8">
+    <div className="mx-auto max-w-7xl space-y-7 px-4 py-10 md:px-6">
       <header className="max-w-3xl">
         <p className="eyebrow">Explore</p>
         <h1 className="display-lg mt-2">Best times today</h1>
@@ -58,9 +58,9 @@ function ExplorePage() {
         <>
           <section aria-label="Best times" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {windows.map((card) => (
-              <article key={card.title} className="panel p-6">
+              <article key={card.title} className="panel p-4">
                 <p className="eyebrow">{card.title}</p>
-                <p className="numeric mt-2 text-2xl">{formatRange(card.win.label, settings)}</p>
+                <p className="numeric mt-2 text-xl">{formatRange(card.win.label, settings)}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{card.note}</p>
                 <div className="mt-4 h-1 w-full overflow-hidden rounded-full bg-surface-strong">
                   <div
@@ -82,7 +82,7 @@ function ExplorePage() {
           </section>
 
           <section aria-labelledby="your-env" className="panel overflow-hidden">
-            <div className="border-b border-border p-6">
+            <div className="border-b border-border p-4">
               <h2 id="your-env" className="display-md">
                 Your environment
               </h2>
@@ -104,14 +104,14 @@ function ExplorePage() {
                 { k: "Sunset", v: formatTime(context.sun.sunset, settings), n: context.sun.goldenHour ? `Golden hour ${formatTime(context.sun.goldenHour, settings)}` : context.sun.source },
                 { k: "Moon", v: context.moon.phase ?? "—", n: `${context.moon.illumination ?? 0}% illuminated` },
               ].map((item) => (
-                <div key={item.k} className="bg-card p-5">
+                <div key={item.k} className="bg-card p-4">
                   <dt className="eyebrow">{item.k}</dt>
                   <dd className="numeric mt-2 text-lg">{item.v}</dd>
                   <p className="mt-1 text-xs text-muted-foreground">{item.n}</p>
                 </div>
               ))}
             </dl>
-            <p className="eyebrow p-5">Sources: {context.sources.join(" · ")}</p>
+            <p className="eyebrow p-4">Sources: {context.sources.join(" · ")}</p>
           </section>
         </>
       )}

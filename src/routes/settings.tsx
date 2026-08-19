@@ -73,7 +73,7 @@ function SettingsPage() {
   const { settings, updateSettings, context } = useEnvironment();
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-16 md:px-8">
+    <div className="mx-auto max-w-3xl px-4 py-10 md:px-6">
       <header>
         <p className="eyebrow">Settings</p>
         <h1 className="display-lg mt-2">Preferences</h1>
@@ -82,7 +82,7 @@ function SettingsPage() {
         </p>
       </header>
 
-      <div className="panel mt-8 px-6 py-2 md:px-8">
+      <div className="panel mt-8 px-6 py-2 md:px-6">
         <Row label="Location" description={context ? `${context.location.name} · ${context.timezone}` : "Choose where to interpret conditions"}>
           <LocationSelector />
         </Row>
@@ -118,7 +118,7 @@ function SettingsPage() {
         </Row>
       </div>
 
-      <p className="mt-6 text-xs text-muted-foreground">
+      <p className="mt-4 text-xs text-muted-foreground">
         Preferences are stored locally in your browser only.
       </p>
     </div>

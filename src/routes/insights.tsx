@@ -30,7 +30,7 @@ function InsightsPage() {
   const { data, isFetching } = useRecommendation("insight");
 
   return (
-    <div className="mx-auto max-w-7xl space-y-12 px-5 py-16 md:px-8">
+    <div className="mx-auto max-w-7xl space-y-7 px-4 py-10 md:px-6">
       <header className="max-w-3xl">
         <p className="eyebrow">Insights</p>
         <h1 className="display-lg mt-2">The week ahead, read for you</h1>
@@ -43,7 +43,7 @@ function InsightsPage() {
         <PanelSkeleton lines={8} />
       ) : (
         <section aria-labelledby="weekly" className="panel overflow-hidden">
-          <div className="border-b border-border p-6">
+          <div className="border-b border-border p-4">
             <h2 id="weekly" className="display-md">
               Weekly outlook
             </h2>
@@ -55,9 +55,9 @@ function InsightsPage() {
                 Math.min(100, Math.round(100 - day.rainProbability * 0.5 - Math.abs(day.tempMax - 24) * 2)),
               );
               return (
-                <li key={day.date} className="bg-card p-5">
+                <li key={day.date} className="bg-card p-4">
                   <p className="eyebrow">{day.weekday}</p>
-                  <p className="numeric mt-2 text-2xl">{formatTemp(day.tempMax, settings, false)}</p>
+                  <p className="numeric mt-2 text-xl">{formatTemp(day.tempMax, settings, false)}</p>
                   <p className="numeric text-sm text-muted-foreground">
                     {formatTemp(day.tempMin, settings, false)} low
                   </p>
@@ -85,20 +85,20 @@ function InsightsPage() {
         </section>
       )}
 
-      <section aria-labelledby="ai-insights" className="panel p-6 md:p-8">
+      <section aria-labelledby="ai-insights" className="panel p-4 md:p-4">
         <AiLabel>AI insights</AiLabel>
         <h2 id="ai-insights" className="display-md mt-1">
           What the week actually means
         </h2>
         {isFetching || !data ? (
-          <div className="mt-6 space-y-3">
+          <div className="mt-4 space-y-3">
             <div className="skeleton h-3 w-full" />
             <div className="skeleton h-3 w-10/12" />
             <div className="skeleton h-3 w-9/12" />
           </div>
         ) : (
           <>
-            <ol className="mt-5 space-y-4">
+            <ol className="mt-3 space-y-4">
               {data.whatToDo.map((item, i) => (
                 <li key={item} className="flex gap-4">
                   <span className="numeric text-sm text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
@@ -106,7 +106,7 @@ function InsightsPage() {
                 </li>
               ))}
             </ol>
-            <p className="mt-5 text-sm text-muted-foreground">{data.why}</p>
+            <p className="mt-3 text-sm text-muted-foreground">{data.why}</p>
             <BasedOn sources={data.dataUsed} />
           </>
         )}

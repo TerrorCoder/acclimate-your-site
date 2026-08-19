@@ -47,7 +47,7 @@ export function OutfitPlanner({ withControls = true }: { withControls?: boolean 
   if (!context || !data || isFetching) return <PanelSkeleton lines={6} />;
 
   return (
-    <section aria-labelledby="outfit" className="panel p-6 md:p-8">
+    <section aria-labelledby="outfit" className="panel p-4 md:p-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <AiLabel>Outfit planner</AiLabel>
@@ -62,7 +62,7 @@ export function OutfitPlanner({ withControls = true }: { withControls?: boolean 
       </div>
 
       {withControls && (
-        <div className="mt-5 space-y-3">
+        <div className="mt-3 space-y-3">
           <div className="flex flex-wrap gap-2">
             {ACTIVITIES.map((a) => (
               <Chip key={a} active={activity === a} onClick={() => setActivity(a)}>
@@ -83,7 +83,7 @@ export function OutfitPlanner({ withControls = true }: { withControls?: boolean 
         </div>
       )}
 
-      <dl className="mt-6 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+      <dl className="mt-4 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
         {data.whatToDo.map((line) => {
           const [label, ...rest] = line.split(" — ");
           return (
@@ -97,7 +97,7 @@ export function OutfitPlanner({ withControls = true }: { withControls?: boolean 
 
       <button
         type="button"
-        className="mt-5 text-sm font-medium underline-offset-4 hover:underline"
+        className="mt-3 text-sm font-medium underline-offset-4 hover:underline"
         onClick={() => setShowWhy((v) => !v)}
         aria-expanded={showWhy}
       >

@@ -57,41 +57,43 @@
 :root {
   --radius: 0.75rem;
 
-  --background: oklch(0.155 0.022 262);
-  --foreground: oklch(0.965 0.008 250);
-  --card: oklch(0.205 0.024 262);
-  --card-foreground: oklch(0.965 0.008 250);
-  --popover: oklch(0.19 0.025 262);
-  --popover-foreground: oklch(0.965 0.008 250);
-  --primary: oklch(0.84 0.13 82);
-  --primary-foreground: oklch(0.19 0.03 60);
-  --secondary: oklch(0.29 0.03 258);
-  --secondary-foreground: oklch(0.95 0.01 250);
-  --muted: oklch(0.26 0.025 258);
-  --muted-foreground: oklch(0.74 0.02 250);
-  --accent: oklch(0.72 0.11 196);
-  --accent-foreground: oklch(0.17 0.03 240);
-  --destructive: oklch(0.63 0.19 25);
-  --destructive-foreground: oklch(0.97 0.01 250);
-  --border: oklch(0.99 0 0 / 12%);
-  --input: oklch(0.99 0 0 / 16%);
-  --ring: oklch(0.84 0.13 82);
+  /* Default = clear daylight sky. Every token below is replaced at runtime
+     by AtmosphereTheme from the live conditions. */
+  --background: oklch(0.975 0.008 240);
+  --foreground: oklch(0.22 0.03 258);
+  --card: oklch(1 0 0 / 82%);
+  --card-foreground: oklch(0.22 0.03 258);
+  --popover: oklch(0.99 0.005 240);
+  --popover-foreground: oklch(0.22 0.03 258);
+  --primary: oklch(0.55 0.14 250);
+  --primary-foreground: oklch(0.99 0.005 250);
+  --secondary: oklch(0.93 0.012 245);
+  --secondary-foreground: oklch(0.25 0.03 255);
+  --muted: oklch(0.93 0.012 245);
+  --muted-foreground: oklch(0.44 0.025 255);
+  --accent: oklch(0.52 0.11 205);
+  --accent-foreground: oklch(0.98 0.005 240);
+  --destructive: oklch(0.55 0.19 25);
+  --destructive-foreground: oklch(0.98 0.01 250);
+  --border: oklch(0.28 0.03 258 / 14%);
+  --input: oklch(0.28 0.03 258 / 20%);
+  --ring: oklch(0.55 0.14 250);
 
-  --good: oklch(0.76 0.14 158);
-  --warn: oklch(0.83 0.14 78);
-  --bad: oklch(0.68 0.18 25);
-  --data: oklch(0.78 0.09 196);
-  --ai: oklch(0.82 0.11 300);
+  --good: oklch(0.52 0.13 158);
+  --warn: oklch(0.56 0.13 62);
+  --bad: oklch(0.55 0.19 25);
+  --data: oklch(0.5 0.1 205);
+  --ai: oklch(0.52 0.16 300);
 
-  --surface: oklch(0.99 0 0 / 6%);
-  --surface-strong: oklch(0.99 0 0 / 10%);
+  --surface: oklch(0.28 0.03 258 / 6%);
+  --surface-strong: oklch(0.28 0.03 258 / 12%);
 
   /* Live atmosphere — overwritten at runtime from real conditions. */
-  --sky-1: oklch(0.62 0.14 235);
-  --sky-2: oklch(0.42 0.11 245);
-  --sky-3: oklch(0.22 0.06 255);
-  --glow: oklch(0.86 0.14 82);
-  --haze: 0.15;
+  --sky-1: oklch(0.88 0.09 232);
+  --sky-2: oklch(0.93 0.05 228);
+  --sky-3: oklch(0.97 0.02 235);
+  --glow: oklch(0.96 0.11 92);
+  --haze: 0.1;
 }
 
 @layer base {
@@ -104,6 +106,7 @@
   }
 
   body {
+    transition: background-color 900ms ease, color 900ms ease;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
@@ -150,7 +153,8 @@
   );
   border: 1px solid var(--color-border);
   border-radius: var(--radius-2xl);
-  box-shadow: 0 24px 60px -40px oklch(0 0 0 / 80%);
+  box-shadow: 0 12px 34px -26px color-mix(in oklab, var(--color-foreground) 45%, transparent);
+  backdrop-filter: blur(10px);
 }
 
 @utility panel-quiet {
@@ -175,21 +179,21 @@
 
 @utility display-xl {
   font-family: var(--font-display);
-  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
   line-height: 0.98;
   letter-spacing: -0.02em;
 }
 
 @utility display-lg {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4.4vw, 3.25rem);
+  font-size: clamp(1.5rem, 2.6vw, 2.125rem);
   line-height: 1.04;
 }
 
 @utility display-md {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.6vw, 2.125rem);
-  line-height: 1.12;
+  font-size: clamp(1.15rem, 1.7vw, 1.4rem);
+  line-height: 1.15;
 }
 
 @utility hairline {

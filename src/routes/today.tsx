@@ -55,7 +55,7 @@ function TodayPage() {
   const brief = useRecommendation("daily_brief");
 
   return (
-    <div className="mx-auto max-w-7xl space-y-12 px-5 py-16 md:px-8">
+    <div className="mx-auto max-w-7xl space-y-7 px-4 py-10 md:px-6">
       <header className="max-w-3xl">
         <p className="eyebrow">Today</p>
         <h1 className="display-lg mt-2">
@@ -81,7 +81,7 @@ function TodayPage() {
               const pick = hours[Math.floor(hours.length / 2)];
               return (
                 <article key={part.name} className="panel grid gap-px overflow-hidden bg-border md:grid-cols-2">
-                  <div className="bg-card p-6">
+                  <div className="bg-card p-4">
                     <DataLabel>{part.name} · data</DataLabel>
                     <dl className="mt-3 space-y-2 text-sm">
                       {[
@@ -101,7 +101,7 @@ function TodayPage() {
                       ))}
                     </dl>
                   </div>
-                  <div className="bg-card p-6">
+                  <div className="bg-card p-4">
                     <AiLabel>{part.name} · interpretation</AiLabel>
                     <p className="mt-3 text-sm">{summarise(hours, context)}</p>
                   </div>

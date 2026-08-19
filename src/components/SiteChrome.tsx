@@ -31,7 +31,7 @@ export function SiteHeader() {
         scrolled ? "border-b border-border bg-background/80 backdrop-blur-xl" : ""
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 md:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
         <Link to="/" className="flex items-baseline gap-2">
           <span className="display-md text-xl">Acclimate</span>
           <span className="eyebrow hidden sm:inline">Environmental intelligence</span>
@@ -68,7 +68,7 @@ export function SiteHeader() {
       </div>
 
       {menuOpen && (
-        <nav aria-label="Mobile" className="border-t border-border bg-background/95 px-5 py-3 lg:hidden">
+        <nav aria-label="Mobile" className="border-t border-border bg-background/95 px-4 py-3 lg:hidden">
           {NAV.map((item) => (
             <Link
               key={item.to}
@@ -90,8 +90,8 @@ export function SiteHeader() {
 export function SiteFooter() {
   const { context } = useEnvironment();
   return (
-    <footer className="mt-24 border-t border-border">
-      <div className="mx-auto grid max-w-7xl gap-8 px-5 py-12 md:grid-cols-3 md:px-8">
+    <footer className="mt-8 border-t border-border">
+      <div className="mx-auto grid max-w-7xl gap-5 px-4 py-8 md:grid-cols-3 md:px-6">
         <div>
           <p className="display-md text-xl">Acclimate</p>
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">

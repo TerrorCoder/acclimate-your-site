@@ -56,7 +56,7 @@ export function RiskRow({ name, level, reason }: { name: string; level: Level; r
 
 export function BasedOn({ sources }: { sources: string[] }) {
   return (
-    <p className="eyebrow mt-5 border-t border-border pt-3">
+    <p className="eyebrow mt-3 border-t border-border pt-3">
       Based on: <span className="text-foreground/70">{sources.join(" · ")}</span>
     </p>
   );
@@ -95,7 +95,7 @@ export function DecisionChain({
         { label: <AiLabel />, body: interpretation, mono: false },
         { label: <span className="eyebrow text-foreground">Decision</span>, body: decision, mono: false },
       ].map((cell, i) => (
-        <div key={i} className="bg-card p-5">
+        <div key={i} className="bg-card p-4">
           {cell.label}
           <p className={`mt-2 text-sm ${cell.mono ? "numeric" : ""} ${i === 2 ? "font-medium" : ""}`}>{cell.body}</p>
         </div>
@@ -121,7 +121,7 @@ export function ResponseCard({
   if (isLoading || !response) return <PanelSkeleton lines={compact ? 3 : 6} />;
 
   return (
-    <article className="panel rise-in p-6 md:p-7">
+    <article className="panel rise-in p-4 md:p-4">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <AiLabel>{headline ?? response.title ?? "AI recommendation"}</AiLabel>
@@ -130,7 +130,7 @@ export function ResponseCard({
         <VerdictBadge verdict={response.recommendation} confidence={response.confidence} />
       </header>
 
-      <div className="mt-5 flex flex-wrap gap-x-8 gap-y-3">
+      <div className="mt-3 flex flex-wrap gap-x-8 gap-y-3">
         <div>
           <p className="eyebrow">Best time</p>
           <p className="numeric text-lg">{formatRange(response.bestTime, settings)}</p>
@@ -149,7 +149,7 @@ export function ResponseCard({
         )}
       </div>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
         <div>
           <p className="eyebrow mb-2">What to do</p>
           <ul className="space-y-2">
@@ -171,7 +171,7 @@ export function ResponseCard({
         </div>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-3">
         <button
           type="button"
           onClick={() => setShowWhy((v) => !v)}

@@ -33,7 +33,7 @@ export function AskAI() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed right-5 bottom-5 z-40 flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[0_18px_40px_-18px_oklch(0_0_0/90%)] transition-transform hover:-translate-y-0.5"
+        className="fixed right-5 bottom-5 z-40 flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-[0_18px_40px_-18px_oklch(0_0_0/90%)] transition-transform hover:-translate-y-0.5"
         aria-haspopup="dialog"
         aria-expanded={open}
       >
@@ -51,7 +51,7 @@ export function AskAI() {
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-background/70 backdrop-blur-sm"
           />
-          <div className="relative flex h-full w-full max-w-xl flex-col overflow-y-auto border-l border-border bg-card p-6 md:p-8">
+          <div className="relative flex h-full w-full max-w-xl flex-col overflow-y-auto border-l border-border bg-card p-4 md:p-4">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="eyebrow" style={{ color: "var(--color-ai)" }}>
@@ -75,7 +75,7 @@ export function AskAI() {
             </div>
 
             <form
-              className="mt-6 flex gap-2"
+              className="mt-4 flex gap-2"
               onSubmit={(e) => {
                 e.preventDefault();
                 void ask(question);
@@ -93,7 +93,7 @@ export function AskAI() {
               />
               <button
                 type="submit"
-                className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
+                className="rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
                 disabled={!context || loading}
               >
                 Ask
@@ -113,7 +113,7 @@ export function AskAI() {
               ))}
             </div>
 
-            <div className="mt-6">
+            <div className="mt-4">
               {loading || answer ? (
                 <ResponseCard response={answer ?? undefined} isLoading={loading} headline={question} />
               ) : (
