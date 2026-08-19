@@ -2,10 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { ConditionsPanel } from "@/components/ConditionsPanel";
 import { DayTimeline } from "@/components/DayTimeline";
-import { AiLabel, ResponseCard } from "@/components/ai/ResponseCard";
+import { AiLabel, DataLabel, ResponseCard } from "@/components/ai/ResponseCard";
 import { OutfitPlanner } from "@/components/features/OutfitPlanner";
 import { PanelSkeleton } from "@/components/states";
-import { Disclosure } from "@/components/Disclosure";
 import { useRecommendation } from "@/lib/ai/useRecommendation";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
 import { formatSpeed, formatTemp } from "@/lib/env/format";
@@ -81,33 +80,35 @@ function TodayPage() {
               const hours = context.todayHours.filter((h) => h.hour >= part.from && h.hour < part.to);
               const pick = hours[Math.floor(hours.length / 2)];
               return (
-                <article key={part.name} className="panel p-4">
-                  <AiLabel>{part.name}</AiLabel>
-                  <p className="mt-2 text-sm">{summarise(hours, context)}</p>
-                  <Disclosure summary="Show the numbers" className="mt-3">
-                    <dl className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
+                <article key={part.name} className="panel grid gap-px overflow-hidden bg-border md:grid-cols-2">
+                  <div className="bg-card p-4">
+                    <DataLabel>{part.name} · data</DataLabel>
+                    <dl className="mt-3 space-y-2 text-sm">
                       {[
                         ["Temperature", pick ? formatTemp(pick.temperature, settings) : "—"],
-                        ["Rain", hours.length ? `${Math.round(Math.max(...hours.map((h) => h.rainProbability)))}%` : "—"],
+                        ["Rain", pick ? `${Math.round(Math.max(...hours.map((h) => h.rainProbability)))}%` : "—"],
                         ["Wind", pick ? formatSpeed(pick.windSpeed, settings) : "—"],
-                        ["UV", hours.length ? Math.max(...hours.map((h) => h.uvIndex)).toFixed(1) : "—"],
+                        ["UV", pick ? Math.max(...hours.map((h) => h.uvIndex)).toFixed(1) : "—"],
                         [
                           "Air quality",
                           context.airQuality.available ? (context.airQuality.aqiLabel ?? "—") : "Unavailable",
                         ],
                       ].map(([k, v]) => (
-                        <div key={k} className="flex justify-between gap-3 border-b border-border pb-1.5">
+                        <div key={k} className="flex justify-between gap-4 border-b border-border pb-1.5">
                           <dt className="text-muted-foreground">{k}</dt>
                           <dd className="numeric">{v}</dd>
                         </div>
                       ))}
                     </dl>
-                  </Disclosure>
+                  </div>
+                  <div className="bg-card p-4">
+                    <AiLabel>{part.name} · interpretation</AiLabel>
+                    <p className="mt-3 text-sm">{summarise(hours, context)}</p>
+                  </div>
                 </article>
               );
             })}
           </div>
-
         )}
       </section>
 

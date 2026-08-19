@@ -65,27 +65,24 @@ function Home() {
           </div>
 
           {context && (
-            <ul className="mt-6 flex flex-wrap items-center gap-2">
+            <dl className="mt-8 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-4">
               {[
                 { k: "Now", v: formatTemp(context.current.temperature, settings) },
                 { k: "Feels", v: formatTemp(context.current.feelsLike, settings) },
                 { k: "Sky", v: context.current.description },
                 { k: "Sunset", v: context.sun.sunset.slice(0, 5) },
               ].map((item) => (
-                <li
-                  key={item.k}
-                  className="flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1.5 text-sm"
-                >
-                  <span className="eyebrow">{item.k}</span>
-                  <span className="numeric">{item.v}</span>
-                </li>
+                <div key={item.k}>
+                  <dt className="eyebrow">{item.k}</dt>
+                  <dd className="numeric mt-1 text-lg">{item.v}</dd>
+                </div>
               ))}
-            </ul>
+            </dl>
           )}
         </div>
       </section>
 
-      <div id="brief" className="mx-auto max-w-7xl space-y-4 px-4 pb-8 md:px-6">
+      <div id="brief" className="mx-auto max-w-7xl space-y-5 px-4 pb-8 md:px-6">
         <DailyBrief />
         <ActivityGrid />
         <ConditionsPanel />
@@ -95,7 +92,6 @@ function Home() {
           <FoodCard />
         </div>
       </div>
-
     </>
   );
 }
