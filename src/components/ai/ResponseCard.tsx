@@ -116,7 +116,7 @@ export function ResponseCard({
   headline?: string;
 }) {
   const { settings } = useEnvironment();
-  const [showWhy, setShowWhy] = useState(!compact);
+  const [showWhy, setShowWhy] = useState(false);
 
   if (isLoading || !response) return <PanelSkeleton lines={compact ? 3 : 6} />;
 
@@ -149,26 +149,16 @@ export function ResponseCard({
         )}
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <div>
-          <p className="eyebrow mb-2">What to do</p>
-          <ul className="space-y-2">
-            {response.whatToDo.map((item) => (
-              <li key={item} className="flex gap-2.5 text-sm">
-                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <p className="eyebrow mb-1">Risks</p>
-          <div className="divide-y divide-border">
-            {response.risks.map((risk) => (
-              <RiskRow key={risk.name} {...risk} />
-            ))}
-          </div>
-        </div>
+      <div className="mt-4">
+        <p className="eyebrow mb-2">What to do</p>
+        <ul className="grid gap-2 md:grid-cols-2">
+          {response.whatToDo.map((item) => (
+            <li key={item} className="flex gap-2.5 text-sm">
+              <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className="mt-3">
@@ -178,10 +168,20 @@ export function ResponseCard({
           className="text-sm font-medium underline-offset-4 hover:underline"
           aria-expanded={showWhy}
         >
-          Why?
+          {showWhy ? "Hide risks & reasoning" : "Risks & reasoning"}
         </button>
-        {showWhy && <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{response.why}</p>}
+        {showWhy && (
+          <div className="mt-2">
+            <div className="divide-y divide-border">
+              {response.risks.map((risk) => (
+                <RiskRow key={risk.name} {...risk} />
+              ))}
+            </div>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{response.why}</p>
+          </div>
+        )}
       </div>
+
 
       <BasedOn sources={response.dataUsed} />
     </article>
