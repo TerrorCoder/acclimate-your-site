@@ -6,7 +6,7 @@ export function SkeletonBlock({ className = "" }: { className?: string }) {
 
 export function PanelSkeleton({ lines = 4, title = true }: { lines?: number; title?: boolean }) {
   return (
-    <div className="panel space-y-3 p-6" aria-busy="true" aria-live="polite">
+    <div className="panel space-y-3 p-4" aria-busy="true" aria-live="polite">
       {title && <SkeletonBlock className="h-4 w-36" />}
       {Array.from({ length: lines }).map((_, i) => (
         <SkeletonBlock key={i} className={`h-3 ${i % 3 === 0 ? "w-full" : i % 3 === 1 ? "w-11/12" : "w-8/12"}`} />
@@ -32,7 +32,7 @@ export function ErrorState({
         <button
           type="button"
           onClick={onRetry}
-          className="mt-5 rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          className="mt-3 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
         >
           Try again
         </button>
@@ -55,7 +55,7 @@ export function EmptyState({
       <div className="mb-4 h-10 w-10 rounded-full border border-border" />
       <h3 className="text-base font-medium">{title}</h3>
       <p className="mt-2 max-w-sm text-sm text-muted-foreground">{message}</p>
-      {action && <div className="mt-5">{action}</div>}
+      {action && <div className="mt-3">{action}</div>}
     </div>
   );
 }

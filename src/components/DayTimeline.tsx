@@ -26,7 +26,7 @@ export function DayTimeline() {
 
   return (
     <section aria-labelledby="timeline" className="panel overflow-hidden">
-      <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-border p-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-border p-4">
         <h2 id="timeline" className="display-md">
           How the day moves
         </h2>
@@ -38,11 +38,11 @@ export function DayTimeline() {
           return (
             <li
               key={h.hour}
-              className="flex flex-col gap-3 bg-card p-5"
+              className="flex flex-col gap-3 bg-card p-4"
               style={active ? { background: "color-mix(in oklab, var(--color-card) 70%, var(--color-primary) 8%)" } : undefined}
             >
               <p className="numeric text-sm text-muted-foreground">{formatTime(h.label, settings)}</p>
-              <p className="numeric text-3xl">{formatTemp(h.temperature, settings, false)}</p>
+              <p className="numeric text-xl">{formatTemp(h.temperature, settings, false)}</p>
               <div className="h-1 w-full overflow-hidden rounded-full bg-surface-strong">
                 <div
                   className="h-full rounded-full"

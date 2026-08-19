@@ -14,10 +14,10 @@ function Metric({
   ratio?: number;
 }) {
   return (
-    <div className="flex flex-col justify-between gap-3 p-5">
+    <div className="flex flex-col justify-between gap-3 p-4">
       <p className="eyebrow">{label}</p>
       <div>
-        <p className="numeric text-2xl">{value}</p>
+        <p className="numeric text-xl">{value}</p>
         {note && <p className="mt-0.5 text-xs text-muted-foreground">{note}</p>}
       </div>
       {typeof ratio === "number" && (
@@ -43,7 +43,7 @@ export function ConditionsPanel() {
 
   return (
     <section aria-labelledby="outside-now" className="panel overflow-hidden">
-      <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-border p-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-border p-4">
         <h2 id="outside-now" className="display-md">
           Outside right now
         </h2>

@@ -15,17 +15,17 @@ export function DailyBrief() {
 
   return (
     <section aria-labelledby="daily-brief" className="panel rise-in overflow-hidden">
-      <div className="flex flex-wrap items-start justify-between gap-4 p-6 md:p-8">
+      <div className="flex flex-wrap items-start justify-between gap-4 p-4 md:p-4">
         <div className="max-w-2xl">
           <AiLabel>Your day at a glance</AiLabel>
-          <h2 id="daily-brief" className="display-lg mt-2">
+          <h2 id="daily-brief" className="display-md mt-1.5">
             {data.why}
           </h2>
         </div>
         <VerdictBadge verdict={data.recommendation} confidence={data.confidence} />
       </div>
 
-      <div className="px-6 pb-6 md:px-8 md:pb-8">
+      <div className="px-4 pb-4 md:px-4 md:pb-5">
         <DecisionChain
           data={`${formatTemp(c.temperature, settings)} · UV ${c.uvIndex.toFixed(0)} · ${Math.round(c.rainProbability)}% rain · ${Math.round(c.windSpeed)} km/h wind`}
           interpretation={data.mainConsideration}
@@ -35,14 +35,14 @@ export function DailyBrief() {
 
       <div className="grid gap-px border-t border-border bg-border md:grid-cols-2 xl:grid-cols-3">
         {Object.entries(extras).map(([label, value]) => (
-          <div key={label} className="bg-card p-5">
+          <div key={label} className="bg-card p-4">
             <DataLabel>{label}</DataLabel>
             <p className="mt-2 text-sm">{typeof value === "string" ? formatRange(value, settings) : value}</p>
           </div>
         ))}
       </div>
 
-      <div className="px-6 pt-6 pb-6 md:px-8 md:pb-8">
+      <div className="px-4 pt-4 pb-4 md:px-4 md:pb-5">
         <p className="eyebrow mb-2">What to do</p>
         <ul className="grid gap-2 md:grid-cols-2">
           {data.whatToDo.map((item) => (

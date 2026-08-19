@@ -39,7 +39,7 @@ function PlanPage() {
   const { data, isFetching } = useRecommendation("activity", { activity: activity ?? "" }, Boolean(activity));
 
   return (
-    <div className="mx-auto max-w-7xl space-y-10 px-5 py-16 md:px-8">
+    <div className="mx-auto max-w-7xl space-y-4 px-4 py-10 md:px-6">
       <header className="max-w-3xl">
         <p className="eyebrow">Plan</p>
         <h1 className="display-lg mt-2">Plan something. We'll check the conditions.</h1>
@@ -73,7 +73,7 @@ function PlanPage() {
           <OutfitPlanner withControls={false} />
         </>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4">
           <ResponseCard response={data} isLoading={isFetching || !data} headline={choice} />
           <OutfitPlanner />
         </div>

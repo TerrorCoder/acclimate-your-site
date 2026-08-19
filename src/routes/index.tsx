@@ -38,34 +38,34 @@ function Home() {
     <>
       <section className="relative isolate overflow-hidden">
         <EnvironmentScene />
-        <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col justify-center px-5 py-24 md:px-8">
-          <LiveIndicator className="mb-8" />
+        <div className="relative mx-auto flex min-h-[58vh] max-w-7xl flex-col justify-center px-4 py-10 md:px-6">
+          <LiveIndicator className="mb-4" />
           <h1 className="display-xl max-w-4xl">What can you do today?</h1>
-          <p className="mt-5 max-w-xl text-lg text-foreground/80">
+          <p className="mt-3 max-w-xl text-base text-foreground/80">
             Your day, interpreted through the world around you.
           </p>
           <p className="mt-3 max-w-xl text-sm text-muted-foreground">
             Weather apps tell you what the weather is. Acclimate tells you what to do about it.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center gap-2.5">
             <LocationSelector />
             <Link
               to="/plan"
-              className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
+              className="rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
             >
               Plan something
             </Link>
             <a
               href="#brief"
-              className="rounded-full border border-border px-5 py-2.5 text-sm transition-colors hover:bg-surface"
+              className="rounded-full border border-border px-4 py-2.5 text-sm transition-colors hover:bg-surface"
             >
               Read today's brief
             </a>
           </div>
 
           {context && (
-            <dl className="mt-14 grid max-w-2xl grid-cols-2 gap-x-10 gap-y-4 sm:grid-cols-4">
+            <dl className="mt-8 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-4">
               {[
                 { k: "Now", v: formatTemp(context.current.temperature, settings) },
                 { k: "Feels", v: formatTemp(context.current.feelsLike, settings) },
@@ -82,12 +82,12 @@ function Home() {
         </div>
       </section>
 
-      <div id="brief" className="mx-auto max-w-7xl space-y-16 px-5 pb-8 md:px-8">
+      <div id="brief" className="mx-auto max-w-7xl space-y-5 px-4 pb-8 md:px-6">
         <DailyBrief />
         <ActivityGrid />
         <ConditionsPanel />
         <DayTimeline />
-        <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
           <OutfitPlanner />
           <FoodCard />
         </div>

@@ -89,8 +89,8 @@ export function EventPlanner() {
   const delta = comparison && baseline ? (comparison.score ?? 0) - baseline.score : 0;
 
   return (
-    <div className="space-y-6">
-      <section aria-labelledby="event-inputs" className="panel p-6 md:p-8">
+    <div className="space-y-4">
+      <section aria-labelledby="event-inputs" className="panel p-4 md:p-4">
         <h2 id="event-inputs" className="display-md">
           Outdoor event readiness
         </h2>
@@ -98,7 +98,7 @@ export function EventPlanner() {
           A preset is loaded so you can see the analysis immediately. Everything is editable.
         </p>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Field label="Event name">
             <input
               className={inputClass}
@@ -169,7 +169,7 @@ export function EventPlanner() {
             <button
               type="button"
               onClick={() => void assess()}
-              className="w-full rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              className="w-full rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
             >
               {loading ? "Assessing…" : "Assess conditions"}
             </button>
@@ -182,12 +182,12 @@ export function EventPlanner() {
       ) : (
         <>
           <section aria-labelledby="readiness" className="panel rise-in overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-6 p-6 md:p-8">
+            <div className="flex flex-wrap items-center justify-between gap-4 p-4 md:p-4">
               <div>
                 <p className="eyebrow">Event readiness</p>
                 <p className="numeric mt-1 text-6xl md:text-7xl">
                   {result.score}
-                  <span className="text-2xl text-muted-foreground">/100</span>
+                  <span className="text-xl text-muted-foreground">/100</span>
                 </p>
                 <p id="readiness" className="display-md mt-2">
                   {result.scoreLabel}
@@ -201,7 +201,7 @@ export function EventPlanner() {
               </div>
             </div>
             <div className="grid gap-px border-t border-border bg-border md:grid-cols-2">
-              <div className="bg-card p-6">
+              <div className="bg-card p-4">
                 <p className="eyebrow mb-1">Risk categories</p>
                 <div className="divide-y divide-border">
                   {result.risks.map((risk) => (
@@ -209,7 +209,7 @@ export function EventPlanner() {
                   ))}
                 </div>
               </div>
-              <div className="bg-card p-6">
+              <div className="bg-card p-4">
                 <AiLabel>AI recommendations</AiLabel>
                 <ul className="mt-3 space-y-2">
                   {result.whatToDo.map((item) => (
@@ -222,7 +222,7 @@ export function EventPlanner() {
                 <p className="mt-4 text-sm text-muted-foreground">{result.why}</p>
               </div>
             </div>
-            <div className="border-t border-border p-6 md:p-8">
+            <div className="border-t border-border p-4 md:p-4">
               <p className="eyebrow mb-3">Event preparation</p>
               <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {((result.extras?.["checklist"] as string[]) ?? []).map((item) => (
@@ -232,7 +232,7 @@ export function EventPlanner() {
                   </li>
                 ))}
               </ul>
-              <p className="eyebrow mt-6 mb-3">Clothing guidance</p>
+              <p className="eyebrow mt-4 mb-3">Clothing guidance</p>
               <ul className="grid gap-2 sm:grid-cols-2">
                 {((result.extras?.["clothing"] as string[]) ?? []).map((item) => (
                   <li key={item} className="text-sm text-muted-foreground">
@@ -244,14 +244,14 @@ export function EventPlanner() {
             </div>
           </section>
 
-          <section aria-labelledby="compare" className="panel p-6 md:p-8">
+          <section aria-labelledby="compare" className="panel p-4 md:p-4">
             <h3 id="compare" className="display-md">
               What if you moved it?
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
               Change the window and the analysis is rebuilt from the forecast for those exact hours.
             </p>
-            <div className="mt-5 flex flex-wrap items-end gap-4">
+            <div className="mt-3 flex flex-wrap items-end gap-4">
               <Field label="New start">
                 <input type="time" className={inputClass} value={altStart} onChange={(e) => setAltStart(e.target.value)} />
               </Field>
@@ -261,25 +261,25 @@ export function EventPlanner() {
               <button
                 type="button"
                 onClick={() => void compare()}
-                className="rounded-full border border-primary px-5 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-surface"
+                className="rounded-full border border-primary px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-surface"
               >
                 {comparing ? "Reassessing…" : "Reassess event"}
               </button>
             </div>
 
             {comparison && baseline && (
-              <div className="rise-in mt-6 grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3">
-                <div className="bg-card p-5">
+              <div className="rise-in mt-4 grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3">
+                <div className="bg-card p-4">
                   <p className="eyebrow">Current · {baseline.label}</p>
-                  <p className="numeric mt-2 text-3xl">{baseline.score}/100</p>
+                  <p className="numeric mt-2 text-xl">{baseline.score}/100</p>
                 </div>
-                <div className="bg-card p-5">
+                <div className="bg-card p-4">
                   <p className="eyebrow">
                     Moved · {altStart}–{altEnd}
                   </p>
-                  <p className="numeric mt-2 text-3xl">{comparison.score}/100</p>
+                  <p className="numeric mt-2 text-xl">{comparison.score}/100</p>
                 </div>
-                <div className="bg-card p-5">
+                <div className="bg-card p-4">
                   <p className="eyebrow">Verdict</p>
                   <p
                     className="mt-2 text-lg font-medium"
@@ -292,7 +292,7 @@ export function EventPlanner() {
                     {delta} points
                   </p>
                 </div>
-                <div className="bg-card p-5 md:col-span-3">
+                <div className="bg-card p-4 md:col-span-3">
                   <AiLabel>Why the score changed</AiLabel>
                   <p className="mt-2 text-sm text-muted-foreground">{comparison.why}</p>
                   <ul className="mt-3 space-y-2">
