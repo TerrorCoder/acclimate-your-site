@@ -116,7 +116,7 @@ export function ResponseCard({
   headline?: string;
 }) {
   const { settings } = useEnvironment();
-  const [showWhy, setShowWhy] = useState(!compact);
+  const [showWhy, setShowWhy] = useState(false);
 
   if (isLoading || !response) return <PanelSkeleton lines={compact ? 3 : 6} />;
 
