@@ -2,9 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { ConditionsPanel } from "@/components/ConditionsPanel";
 import { DayTimeline } from "@/components/DayTimeline";
-import { AiLabel, DataLabel, ResponseCard } from "@/components/ai/ResponseCard";
+import { AiLabel, ResponseCard } from "@/components/ai/ResponseCard";
 import { OutfitPlanner } from "@/components/features/OutfitPlanner";
 import { PanelSkeleton } from "@/components/states";
+import { Disclosure } from "@/components/Disclosure";
 import { useRecommendation } from "@/lib/ai/useRecommendation";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
 import { formatSpeed, formatTemp } from "@/lib/env/format";
