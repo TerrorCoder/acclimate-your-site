@@ -274,3 +274,14 @@ export function atmosphereFor(ctx?: NormalizedContext): Atmosphere {
           : palette.glow,
   };
 }
+
+/** QA helper: resolve a palette directly from a state/night pair (used by ?sky= overrides). */
+export function paletteForState(state: WeatherState, night: boolean): Palette {
+  let key: string = state;
+  if (night) {
+    if (state === "thunderstorm") key = "thunderstorm";
+    else if (state === "rain" || state === "snow") key = "night-rain";
+    else key = "night";
+  }
+  return PALETTES[key] ?? PALETTES["clear"]!;
+}
