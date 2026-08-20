@@ -187,7 +187,9 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
 
   const intensity = context?.current.precipitation ?? 0;
   const wind = context?.current.windSpeed ?? 8;
-  const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const [params, setParams] = useState<URLSearchParams | null>(null);
+  useEffect(() => setParams(new URLSearchParams(window.location.search)), []);
+
   const override = params?.get("sky") as typeof atmo.state | null;
   const state = override || atmo.state;
   const night = params?.get("night") === "1" ? true : atmo.night;
