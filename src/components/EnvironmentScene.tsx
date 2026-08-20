@@ -86,9 +86,9 @@ function look(state: string, night: boolean, golden: boolean): CloudLook {
       rays: 0.06,
     },
     thunderstorm: {
-      coverage: 0.92,
-      lit: [126, 134, 148],
-      shade: [38, 42, 54],
+      coverage: 0.95,
+      lit: [158, 168, 186],
+      shade: [24, 27, 36],
       top: 0,
       detail: 1.15,
       contrast: 1.25,
@@ -483,12 +483,12 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
             ctx2d.fill();
           } else {
             ctx2d.strokeStyle = light
-              ? `rgba(96,116,150,${0.1 + p.z * 0.2})`
-              : `rgba(198,222,255,${0.14 + p.z * 0.3})`;
-            ctx2d.lineWidth = p.z * 1.05;
+              ? `rgba(96,116,150,${0.07 + p.z * 0.14})`
+              : `rgba(198,222,255,${0.09 + p.z * 0.2})`;
+            ctx2d.lineWidth = Math.max(0.6, p.z * 0.85);
             ctx2d.beginPath();
             ctx2d.moveTo(px, py);
-            ctx2d.lineTo(px - wind / 14, py + 12 + p.z * 14);
+            ctx2d.lineTo(px - wind / 16, py + 8 + p.z * 11);
             ctx2d.stroke();
           }
         }
