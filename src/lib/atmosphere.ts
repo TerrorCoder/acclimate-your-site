@@ -18,7 +18,7 @@ export interface Atmosphere {
   theme: Record<string, string>;
 }
 
-type Palette = Pick<Atmosphere, "sky1" | "sky2" | "sky3" | "glow" | "accent" | "haze" | "mode"> & {
+export type Palette = Pick<Atmosphere, "sky1" | "sky2" | "sky3" | "glow" | "accent" | "haze" | "mode"> & {
   theme: Record<string, string>;
 };
 
@@ -273,4 +273,15 @@ export function atmosphereFor(ctx?: NormalizedContext): Atmosphere {
             : "oklch(0.85 0.05 220)"
           : palette.glow,
   };
+}
+
+/** QA helper: resolve a palette directly from a state/night pair (used by ?sky= overrides). */
+export function paletteForState(state: WeatherState, night: boolean): Palette {
+  let key: string = state;
+  if (night) {
+    if (state === "thunderstorm") key = "thunderstorm";
+    else if (state === "rain" || state === "snow") key = "night-rain";
+    else key = "night";
+  }
+  return PALETTES[key] ?? PALETTES["clear"]!;
 }
