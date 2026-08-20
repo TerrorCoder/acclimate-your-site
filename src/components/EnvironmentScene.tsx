@@ -188,10 +188,14 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
   const intensity = context?.current.precipitation ?? 0;
   const wind = context?.current.windSpeed ?? 8;
   const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-  const state = (params?.get("sky") as typeof atmo.state) || atmo.state;
+  const override = params?.get("sky") as typeof atmo.state | null;
+  const state = override || atmo.state;
   const night = params?.get("night") === "1" ? true : atmo.night;
-  const light = atmo.mode === "light";
-  const golden = atmo.key.startsWith("sunset") || atmo.key.startsWith("sunrise");
+  const preview = override || params?.get("night") === "1" ? paletteForState(state, night) : null;
+  const sky = preview ?? atmo;
+  const light = (preview?.mode ?? atmo.mode) === "light";
+  const golden = !preview && (atmo.key.startsWith("sunset") || atmo.key.startsWith("sunrise"));
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
