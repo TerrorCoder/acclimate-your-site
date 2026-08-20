@@ -4,6 +4,8 @@ export type ThemeMode = "light" | "dark";
 
 export interface Atmosphere {
   key: string;
+  /** Which sky look is active (clear, overcast, night, sunset…). */
+  paletteKey: string;
   state: WeatherState;
   night: boolean;
   mode: ThemeMode;
@@ -257,6 +259,7 @@ export function atmosphereFor(ctx?: NormalizedContext): Atmosphere {
 
   return {
     key: `${paletteKey}-${night ? "night" : "day"}`,
+    paletteKey,
     state,
     night,
     label: LABELS[state],
