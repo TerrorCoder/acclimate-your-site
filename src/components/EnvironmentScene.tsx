@@ -262,14 +262,15 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
       if (!image) return;
       const data = image.data;
       const oct = mobile ? 4 : 5;
-      const scaleX = 3.1 * L.detail;
-      const scaleY = 2.1 * L.detail;
-      const drift = t * 0.012;
-      const boil = t * 0.0045;
-      // Offset (in buffer uv) used to sample "toward the light" for rim shading.
-      const lx = sunX - 0.5;
-      const stepX = -Math.sign(lx || 1) * 0.028;
-      const stepY = -0.036;
+      const aspect = bh / bw;
+      // Isotropic-ish sampling so puffs read as round volumes, not horizontal smears.
+      const FX = 4.6 * L.detail;
+      const FY = FX * aspect * 2.4;
+      const drift = t * 0.008;
+      const boil = t * 0.00035;
+      // Offset (in noise space) used to sample "toward the light" for rim shading.
+      const stepX = -Math.sign(sunX - 0.5 || 1) * 0.14 * FX * 0.1;
+      const stepY = -0.16 * FY * 0.1;
 
       for (let y = 0; y < bh; y++) {
         const v = y / bh;
@@ -277,6 +278,8 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
         const band = Math.min(1, Math.max(0, (v - L.top) / 0.34));
         const horizon = 1 - Math.min(1, Math.max(0, (v - 0.68) / 0.3));
         const mask = Math.pow(band, 0.65) * Math.pow(horizon, 0.9);
+        // Mild perspective: detail compresses as the deck recedes.
+        const vv = Math.pow(Math.max(0, v), 1.25);
         for (let x = 0; x < bw; x++) {
           const i = (y * bw + x) << 2;
           if (mask <= 0.004) {
@@ -284,15 +287,16 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
             continue;
           }
           const u = x / bw;
-          // Perspective squash toward the horizon makes the deck read as depth.
-          const persp = 1 / (0.35 + v * 1.2);
-          const nx = (u - drift) * scaleX * persp;
-          const ny = v * scaleY + boil;
+          const bx = (u - drift) * FX;
+          const by = vv * FY + boil;
 
-          let d = fbm(nx, ny, oct);
           // Domain warp for billowing cauliflower edges.
-          const w = fbm(nx * 2.3 + 5.2, ny * 2.3 - 3.1, 3);
-          d = fbm(nx + w * 0.55, ny + w * 0.45, oct);
+          const wx = fbm(bx * 1.7 + 5.2, by * 1.7 - 3.1, 3) - 0.5;
+          const wy = fbm(bx * 1.7 - 8.4, by * 1.7 + 2.6, 3) - 0.5;
+          const nx = bx + wx * 1.1;
+          const ny = by + wy * 1.1;
+          const d = fbm(nx, ny, oct);
+
 
           const cov = L.coverage * (0.55 + mask * 0.75);
           let dens = (d - (1 - cov)) / 0.26;
