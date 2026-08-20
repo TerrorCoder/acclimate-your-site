@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { atmosphereFor, paletteForState } from "@/lib/atmosphere";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
