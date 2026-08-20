@@ -36,20 +36,20 @@ type CloudLook = {
 function look(state: string, night: boolean, golden: boolean): CloudLook {
   const base: Record<string, CloudLook> = {
     clear: {
-      coverage: 0.2,
+      coverage: 0.36,
       lit: [255, 255, 255],
-      shade: [176, 196, 222],
-      top: 0.34,
+      shade: [168, 190, 220],
+      top: 0.38,
       detail: 1,
       contrast: 1,
       opacity: 0.95,
       rays: 0.55,
     },
     "partly-cloudy": {
-      coverage: 0.42,
+      coverage: 0.52,
       lit: [255, 255, 255],
-      shade: [152, 175, 205],
-      top: 0.24,
+      shade: [148, 172, 205],
+      top: 0.26,
       detail: 1.05,
       contrast: 1.1,
       opacity: 1,
@@ -187,8 +187,9 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
 
   const intensity = context?.current.precipitation ?? 0;
   const wind = context?.current.windSpeed ?? 8;
-  const state = atmo.state;
-  const night = atmo.night;
+  const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const state = (params?.get("sky") as typeof atmo.state) || atmo.state;
+  const night = params?.get("night") === "1" ? true : atmo.night;
   const light = atmo.mode === "light";
   const golden = atmo.key.startsWith("sunset") || atmo.key.startsWith("sunrise");
 
@@ -332,15 +333,16 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
       const py = sunY * heightPx;
       ctx2d.save();
       ctx2d.globalCompositeOperation = "lighter";
-      const rayCount = 7;
+      ctx2d.filter = `blur(${Math.max(14, width * 0.02)}px)`;
+      const rayCount = 5;
       for (let i = 0; i < rayCount; i++) {
-        const a = Math.PI / 2 + (i - (rayCount - 1) / 2) * 0.15 + Math.sin(t * 0.0004 + i) * 0.012;
+        const a = Math.PI / 2 + (i - (rayCount - 1) / 2) * 0.22 + Math.sin(t * 0.0004 + i) * 0.012;
         const len = heightPx * 1.25;
-        const spread = 26 + i * 6;
+        const spread = 40 + i * 14;
         const g = ctx2d.createLinearGradient(px, py, px + Math.cos(a) * len, py + Math.sin(a) * len);
         const tint = night ? "226,236,255" : golden ? "255,206,150" : "255,250,235";
-        g.addColorStop(0, `rgba(${tint},${0.16 * L.rays})`);
-        g.addColorStop(0.55, `rgba(${tint},${0.06 * L.rays})`);
+        g.addColorStop(0, `rgba(${tint},${0.1 * L.rays})`);
+        g.addColorStop(0.5, `rgba(${tint},${0.045 * L.rays})`);
         g.addColorStop(1, `rgba(${tint},0)`);
         ctx2d.fillStyle = g;
         ctx2d.beginPath();
