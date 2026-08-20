@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 
-import { atmosphereFor } from "@/lib/atmosphere";
+import { atmosphereFor, paletteForState } from "@/lib/atmosphere";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
 
 /**
@@ -509,7 +509,7 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
         height === "full" ? "h-[86vh]" : "h-[42vh]"
       }`}
       style={{
-        background: `radial-gradient(130% 90% at ${night ? "74% 10%" : "74% 6%"}, ${atmo.sky1} 0%, ${atmo.sky2} 40%, ${atmo.sky3} 74%, var(--color-background) 100%)`,
+        background: `radial-gradient(130% 90% at ${night ? "74% 10%" : "74% 6%"}, ${sky.sky1} 0%, ${sky.sky2} 40%, ${sky.sky3} 74%, var(--color-background) 100%)`,
         transition: "background 1200ms ease",
       }}
     >

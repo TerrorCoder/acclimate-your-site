@@ -18,7 +18,7 @@ export interface Atmosphere {
   theme: Record<string, string>;
 }
 
-type Palette = Pick<Atmosphere, "sky1" | "sky2" | "sky3" | "glow" | "accent" | "haze" | "mode"> & {
+export type Palette = Pick<Atmosphere, "sky1" | "sky2" | "sky3" | "glow" | "accent" | "haze" | "mode"> & {
   theme: Record<string, string>;
 };
 
