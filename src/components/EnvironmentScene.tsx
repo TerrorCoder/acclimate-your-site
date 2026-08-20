@@ -275,7 +275,7 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
         const v = y / bh;
         // Vertical placement: deck starts at L.top and thickens downward, then fades to horizon.
         const band = Math.min(1, Math.max(0, (v - L.top) / 0.34));
-        const horizon = 1 - Math.min(1, Math.max(0, (v - 0.62) / 0.34));
+        const horizon = 1 - Math.min(1, Math.max(0, (v - 0.68) / 0.3));
         const mask = Math.pow(band, 0.65) * Math.pow(horizon, 0.9);
         for (let x = 0; x < bw; x++) {
           const i = (y * bw + x) << 2;
@@ -295,7 +295,7 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
           d = fbm(nx + w * 0.55, ny + w * 0.45, oct);
 
           const cov = L.coverage * (0.55 + mask * 0.75);
-          let dens = (d - (1 - cov)) / 0.42;
+          let dens = (d - (1 - cov)) / 0.26;
           dens = dens <= 0 ? 0 : dens > 1 ? 1 : dens;
           dens *= mask;
           if (dens <= 0.004) {
@@ -306,7 +306,7 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
           // Light transmission: sample density between here and the light source.
           const s1 = fbm(nx + stepX * scaleX * persp + w * 0.55, ny + stepY * scaleY + w * 0.45, 3);
           const s2 = fbm(nx + stepX * 2.2 * scaleX * persp + w * 0.55, ny + stepY * 2.2 * scaleY + w * 0.45, 3);
-          const occl = Math.max(0, (s1 - (1 - cov)) / 0.42) * 0.65 + Math.max(0, (s2 - (1 - cov)) / 0.42) * 0.35;
+          const occl = Math.max(0, (s1 - (1 - cov)) / 0.26) * 0.65 + Math.max(0, (s2 - (1 - cov)) / 0.26) * 0.35;
           let litAmt = 1 - Math.min(1, occl * 1.35 * L.contrast);
           // Bright silver rim where density thins out toward the light.
           const rim = Math.max(0, 1 - dens * 1.9) * (1 - Math.min(1, occl * 1.6));
@@ -321,7 +321,7 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
           data[i] = L.shade[0] + (L.lit[0] - L.shade[0]) * e;
           data[i + 1] = L.shade[1] + (L.lit[1] - L.shade[1]) * e;
           data[i + 2] = L.shade[2] + (L.lit[2] - L.shade[2]) * e;
-          data[i + 3] = Math.min(255, dens * 255 * L.opacity * (0.55 + dens * 0.6));
+          data[i + 3] = Math.min(255, Math.pow(dens, 0.72) * 255 * L.opacity);
         }
       }
       bctx.putImageData(image, 0, 0);
@@ -509,7 +509,7 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
       <div
         className="absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, transparent 24%, color-mix(in oklab, var(--color-background) 70%, transparent) 66%, var(--color-background) 100%)`,
+          background: `linear-gradient(to bottom, transparent 46%, color-mix(in oklab, var(--color-background) 62%, transparent) 74%, var(--color-background) 100%)`,
           backdropFilter: atmo.haze > 0.4 ? "blur(2px)" : undefined,
         }}
       />
