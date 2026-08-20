@@ -308,8 +308,9 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
           }
 
           // Light transmission: sample density between here and the light source.
-          const s1 = fbm(nx + stepX * scaleX * persp + w * 0.55, ny + stepY * scaleY + w * 0.45, 3);
-          const s2 = fbm(nx + stepX * 2.2 * scaleX * persp + w * 0.55, ny + stepY * 2.2 * scaleY + w * 0.45, 3);
+          const s1 = fbm(nx + stepX, ny + stepY, oct - 1);
+          const s2 = fbm(nx + stepX * 2.4, ny + stepY * 2.4, oct - 1);
+
           const occl = Math.max(0, (s1 - (1 - cov)) / 0.26) * 0.65 + Math.max(0, (s2 - (1 - cov)) / 0.26) * 0.35;
           let litAmt = 1 - Math.min(1, occl * 1.35 * L.contrast);
           // Bright silver rim where density thins out toward the light.
