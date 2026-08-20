@@ -274,3 +274,36 @@
     transform: translateY(-10px);
   }
 }
+
+/* Photographic sky: fade in on change plus a very slow ken-burns drift. */
+.sky-photo {
+  animation:
+    sky-fade 1600ms ease both,
+    sky-drift 90s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes sky-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sky-drift {
+  from {
+    transform: scale(1.08) translate3d(-1.2%, -0.8%, 0);
+  }
+  to {
+    transform: scale(1.16) translate3d(1.2%, 0.8%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-photo {
+    animation: sky-fade 600ms ease both;
+    transform: scale(1.05);
+  }
+}
