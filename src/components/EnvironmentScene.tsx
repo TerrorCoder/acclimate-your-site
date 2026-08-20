@@ -1,16 +1,41 @@
 import { useEffect, useMemo, useRef } from "react";
 
+import clearSky from "@/assets/sky/clear.png.asset.json";
+import fogSky from "@/assets/sky/fog.jpg.asset.json";
+import nightRainSky from "@/assets/sky/night-rain.jpg.asset.json";
+import nightSky from "@/assets/sky/night.png.asset.json";
+import overcastSky from "@/assets/sky/overcast.jpg.asset.json";
+import partlyCloudySky from "@/assets/sky/partly-cloudy.jpg.asset.json";
+import rainSky from "@/assets/sky/rain.png.asset.json";
+import snowSky from "@/assets/sky/snow.jpg.asset.json";
+import sunriseSky from "@/assets/sky/sunrise.jpg.asset.json";
+import sunsetSky from "@/assets/sky/sunset.jpg.asset.json";
+import thunderstormSky from "@/assets/sky/thunderstorm.png.asset.json";
 import { atmosphereFor } from "@/lib/atmosphere";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
 
 /**
  * Weather-reactive environmental scene.
  *
- * This is the integration slot a Spline (or any WebGL) scene plugs into: the same atmosphere
- * contract (state, night, mode, palette, intensity) drives it, so a 3D runtime can be mounted
- * here later without touching any other part of the app. Today it renders a lightweight layered
- * canvas + CSS environment that stays smooth on mobile and respects reduced-motion preferences.
+ * Instead of a 3D runtime we render a high-detail photographic sky chosen from the live
+ * conditions, animated with a very slow ken-burns drift so it feels alive without motion
+ * sickness or GPU cost. A light particle canvas layers rain / snow / stars on top, and a
+ * scrim fades the photo into the page background so text always stays readable.
  */
+const SKY_IMAGES: Record<string, string> = {
+  clear: clearSky.url,
+  "partly-cloudy": partlyCloudySky.url,
+  overcast: overcastSky.url,
+  fog: fogSky.url,
+  rain: rainSky.url,
+  thunderstorm: thunderstormSky.url,
+  snow: snowSky.url,
+  night: nightSky.url,
+  "night-rain": nightRainSky.url,
+  sunrise: sunriseSky.url,
+  sunset: sunsetSky.url,
+};
+
 export function EnvironmentScene({ height = "full" }: { height?: "full" | "short" }) {
   const { context } = useEnvironment();
   const atmo = useMemo(() => atmosphereFor(context), [context]);
@@ -21,6 +46,7 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
   const state = atmo.state;
   const night = atmo.night;
   const light = atmo.mode === "light";
+  const image = SKY_IMAGES[atmo.paletteKey] ?? SKY_IMAGES["clear"]!;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -47,12 +73,12 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
     window.addEventListener("resize", resize);
 
     const precipitating = state === "rain" || state === "thunderstorm" || state === "snow";
-    const baseCount = mobile ? 70 : 150;
+    const baseCount = mobile ? 60 : 130;
     const count = precipitating
       ? Math.round(baseCount * Math.min(2, 0.6 + intensity))
       : night
-        ? baseCount
-        : Math.round(baseCount * 0.25);
+        ? Math.round(baseCount * 0.5)
+        : 0;
 
     const particles = Array.from({ length: count }, () => ({
       x: Math.random() * (width || 1),
@@ -73,7 +99,7 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
       if (state === "thunderstorm") {
         if (Math.random() < 0.0016 * dt) flash = 1;
         if (flash > 0) {
-          ctx2d.fillStyle = `rgba(255,255,255,${flash * 0.35})`;
+          ctx2d.fillStyle = `rgba(255,255,255,${flash * 0.3})`;
           ctx2d.fillRect(0, 0, width, heightPx);
           flash = Math.max(0, flash - dt / 260);
         }
@@ -90,16 +116,14 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
           }
           if (p.x > width + 10) p.x = -10;
           if (state === "snow") {
-            ctx2d.fillStyle = light
-              ? `rgba(255,255,255,${0.7 + p.z * 0.3})`
-              : `rgba(255,255,255,${0.35 + p.z * 0.4})`;
+            ctx2d.fillStyle = `rgba(255,255,255,${0.5 + p.z * 0.35})`;
             ctx2d.beginPath();
             ctx2d.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             ctx2d.fill();
           } else {
             ctx2d.strokeStyle = light
-              ? `rgba(70,95,135,${0.12 + p.z * 0.22})`
-              : `rgba(198,222,255,${0.18 + p.z * 0.35})`;
+              ? `rgba(235,245,255,${0.18 + p.z * 0.25})`
+              : `rgba(198,222,255,${0.16 + p.z * 0.3})`;
             ctx2d.lineWidth = p.z * 1.1;
             ctx2d.beginPath();
             ctx2d.moveTo(p.x, p.y);
@@ -107,16 +131,14 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
             ctx2d.stroke();
           }
         } else {
-          // Stars at night, faint drifting motes during the day.
+          // Faint twinkling stars over the night photograph.
           p.tw += dt / 900;
-          const alpha = night ? 0.35 + Math.sin(p.tw) * 0.3 : 0.06 + Math.sin(p.tw) * 0.04;
-          p.x += (wind / 700) * dt * p.z;
+          const alpha = 0.25 + Math.sin(p.tw) * 0.25;
+          p.x += (wind / 900) * dt * p.z;
           if (p.x > width + 4) p.x = -4;
-          ctx2d.fillStyle = night
-            ? `rgba(226,235,255,${Math.max(0, alpha)})`
-            : `rgba(255,255,255,${Math.max(0, alpha)})`;
+          ctx2d.fillStyle = `rgba(226,235,255,${Math.max(0, alpha)})`;
           ctx2d.beginPath();
-          ctx2d.arc(p.x, p.y, p.r * (night ? 0.9 : 1.8), 0, Math.PI * 2);
+          ctx2d.arc(p.x, p.y, p.r * 0.8, 0, Math.PI * 2);
           ctx2d.fill();
         }
       }
@@ -137,59 +159,39 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
       className={`pointer-events-none absolute inset-x-0 top-0 overflow-hidden ${
         height === "full" ? "h-[86vh]" : "h-[42vh]"
       }`}
-      style={{
-        background: `radial-gradient(120% 80% at 70% 0%, ${atmo.sky1} 0%, ${atmo.sky2} 42%, ${atmo.sky3} 78%, var(--color-background) 100%)`,
-        transition: "background 1200ms ease",
-      }}
+      style={{ backgroundColor: atmo.sky2 }}
     >
-      {/* Sun / moon */}
+      {/* High-detail photographic sky, cross-faded per condition and very slowly drifting. */}
+      <img
+        key={atmo.paletteKey}
+        src={image}
+        alt=""
+        width={1920}
+        height={1080}
+        className="sky-photo absolute inset-0 h-full w-full object-cover"
+      />
+      {/* Warm/cool light bloom tinted by temperature and sun position. */}
       <div
-        className="absolute rounded-full blur-2xl"
+        className="absolute rounded-full blur-3xl"
         style={{
-          width: night ? "10vw" : "18vw",
-          height: night ? "10vw" : "18vw",
-          top: night ? "8%" : "10%",
+          width: night ? "16vw" : "26vw",
+          height: night ? "16vw" : "26vw",
+          top: night ? "6%" : "8%",
           right: "12%",
           background: `radial-gradient(circle, ${atmo.glow} 0%, transparent 70%)`,
-          opacity: night ? 0.55 : 0.85,
-          animation: "slow-float 14s ease-in-out infinite",
+          opacity: night ? 0.28 : 0.4,
+          animation: "slow-float 26s ease-in-out infinite",
           transition: "all 1200ms ease",
         }}
       />
-      {/* Cloud bands */}
-      {["clear"].includes(state) ? null : (
-        <>
-          <div
-            className="absolute inset-x-[-20%] top-[12%] h-[22vh] blur-3xl"
-            style={{
-              background: `linear-gradient(90deg, transparent, ${light ? "oklch(1 0 0)" : atmo.sky2}, transparent)`,
-              opacity: state === "overcast" || state === "rain" || state === "thunderstorm" ? 0.8 : 0.5,
-              animation: `drift ${Math.max(28, 90 - wind)}s ease-in-out infinite alternate`,
-            }}
-          />
-          <div
-            className="absolute inset-x-[-25%] top-[26%] h-[18vh] blur-3xl"
-            style={{
-              background: `linear-gradient(90deg, transparent, ${light ? "oklch(0.98 0.01 240)" : atmo.sky1}, transparent)`,
-              opacity: 0.4,
-              animation: `drift ${Math.max(40, 120 - wind)}s ease-in-out infinite alternate-reverse`,
-            }}
-          />
-        </>
-      )}
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
-      {/* Haze / fog fading into the page background so text stays readable */}
+      {/* Scrim: fades the photo into the page background so text keeps its contrast. */}
       <div
         className="absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, transparent 26%, color-mix(in oklab, var(--color-background) 72%, transparent) 68%, var(--color-background) 100%)`,
+          background: `linear-gradient(to bottom, color-mix(in oklab, var(--color-background) 34%, transparent) 0%, color-mix(in oklab, var(--color-background) 58%, transparent) 46%, color-mix(in oklab, var(--color-background) 88%, transparent) 78%, var(--color-background) 100%)`,
           backdropFilter: atmo.haze > 0.4 ? "blur(2px)" : undefined,
         }}
-      />
-      {/* Ground horizon */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-[18vh]"
-        style={{ background: `linear-gradient(to top, var(--color-background), transparent)` }}
       />
     </div>
   );
