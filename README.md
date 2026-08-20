@@ -1,14 +1,18 @@
-# Welcome to your Lovable project
+# Acclimate Site Builder
+
+Create the static site "Acclimate" outlined in the attached document. That document shall be a guide you will use as a checklist and to review your progress until you finish implementation.
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://acclimate-your-site.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/e92b55ee-bb50-4207-bdb0-56da7f70959e).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +24,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
