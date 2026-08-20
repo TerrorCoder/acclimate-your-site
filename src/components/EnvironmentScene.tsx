@@ -516,6 +516,13 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
       }}
     >
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+      {/* Readability scrim: keeps hero copy legible over bright cloud tops */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(100deg, color-mix(in oklab, var(--color-background) 74%, transparent) 0%, color-mix(in oklab, var(--color-background) 40%, transparent) 34%, transparent 58%)`,
+        }}
+      />
       {/* Haze / fog fading into the page background so text stays readable */}
       <div
         className="absolute inset-0"
@@ -524,6 +531,7 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
           backdropFilter: atmo.haze > 0.4 ? "blur(2px)" : undefined,
         }}
       />
+
       {/* Ground horizon */}
       <div
         className="absolute inset-x-0 bottom-0 h-[18vh]"
