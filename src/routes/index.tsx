@@ -84,31 +84,23 @@ function Home() {
       </section>
 
       <div className="mx-auto max-w-7xl space-y-5 px-4 pb-8 md:px-6">
-        <SectionNav
-          items={[
-            { id: "brief", label: "Daily brief" },
-            { id: "activities", label: "Activities" },
-            { id: "conditions", label: "Conditions" },
-            { id: "timeline", label: "Timeline" },
-            { id: "outfit", label: "Outfit & food" },
-          ]}
-        />
-        <section id="brief" className="scroll-mt-32">
+        <SectionNav items={SECTIONS} active={active} onChange={setActive} />
+        <SectionPanel id="brief" active={active}>
           <DailyBrief />
-        </section>
-        <section id="activities" className="scroll-mt-32">
+        </SectionPanel>
+        <SectionPanel id="activities" active={active}>
           <ActivityGrid />
-        </section>
-        <section id="conditions" className="scroll-mt-32">
+        </SectionPanel>
+        <SectionPanel id="conditions" active={active}>
           <ConditionsPanel />
-        </section>
-        <section id="timeline" className="scroll-mt-32">
+        </SectionPanel>
+        <SectionPanel id="timeline" active={active}>
           <DayTimeline />
-        </section>
-        <section id="outfit" className="grid scroll-mt-32 gap-4 lg:grid-cols-[1.4fr_1fr]">
+        </SectionPanel>
+        <SectionPanel id="outfit" active={active} className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
           <OutfitPlanner />
           <FoodCard />
-        </section>
+        </SectionPanel>
       </div>
     </>
   );
