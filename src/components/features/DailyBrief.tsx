@@ -10,7 +10,12 @@ export function DailyBrief() {
 
   if (!context || !data || isFetching) return <PanelSkeleton lines={7} />;
 
-  const extras = (data.extras ?? {}) as Record<string, string>;
+  // "Best time to…" rows are Explore's job — the brief keeps only what is unique to it.
+  const extras = Object.fromEntries(
+    Object.entries((data.extras ?? {}) as Record<string, string>).filter(
+      ([label]) => !label.toLowerCase().startsWith("best time"),
+    ),
+  );
   const c = context.current;
 
   return (
