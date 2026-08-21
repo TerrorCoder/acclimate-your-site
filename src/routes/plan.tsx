@@ -20,7 +20,8 @@ export const Route = createFileRoute("/plan")({
       { property: "og:title", content: "Plan an outdoor day — Acclimate" },
       {
         property: "og:description",
-        content: "Event readiness scoring, risks, preparation checklists and time comparison from live data.",
+        content:
+          "Event readiness scoring, risks, preparation checklists and time comparison from live data.",
       },
     ],
   }),
@@ -44,7 +45,11 @@ const SECTIONS = [
 function PlanPage() {
   const [choice, setChoice] = useState<(typeof CHOICES)[number]>("Outdoor Event");
   const activity = ACTIVITY_MAP[choice];
-  const { data, isFetching } = useRecommendation("activity", { activity: activity ?? "" }, Boolean(activity));
+  const { data, isFetching } = useRecommendation(
+    "activity",
+    { activity: activity ?? "" },
+    Boolean(activity),
+  );
   const { active, setActive } = useSectionTabs(SECTIONS);
 
   return (
@@ -53,7 +58,8 @@ function PlanPage() {
         <p className="eyebrow">Plan</p>
         <h1 className="display-lg mt-2">Plan something. We'll check the conditions.</h1>
         <p className="mt-3 text-muted-foreground">
-          Choose what you have in mind. Every assessment is rebuilt from the forecast for the exact hours you pick.
+          Choose what you have in mind. Every assessment is rebuilt from the forecast for the exact
+          hours you pick.
         </p>
       </header>
 
