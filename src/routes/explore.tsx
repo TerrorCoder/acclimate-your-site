@@ -54,11 +54,22 @@ function ExplorePage() {
         </p>
       </header>
 
+      <SectionNav
+        items={[
+          { id: "best-times", label: "Best times" },
+          { id: "your-env", label: "Your environment" },
+        ]}
+      />
+
       {!context ? (
         <PanelSkeleton lines={8} />
       ) : (
         <>
-          <section aria-label="Best times" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <section
+            id="best-times"
+            aria-label="Best times"
+            className="grid scroll-mt-32 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          >
             {windows.map((card) => (
               <article key={card.title} className="panel p-4">
                 <p className="eyebrow">{card.title}</p>
