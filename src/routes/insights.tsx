@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { SectionNav } from "@/components/SectionNav";
+import { SectionNav, SectionPanel, useSectionTabs } from "@/components/SectionNav";
 
 import { AiLabel, BasedOn } from "@/components/ai/ResponseCard";
 import { ActionChips } from "@/components/ai/ActionChips";
@@ -28,9 +28,15 @@ export const Route = createFileRoute("/insights")({
   component: InsightsPage,
 });
 
+const SECTIONS = [
+  { id: "weekly", label: "Weekly outlook" },
+  { id: "ai-insights", label: "AI insights" },
+];
+
 function InsightsPage() {
   const { context, settings } = useEnvironment();
   const { data, isFetching } = useRecommendation("insight");
+  const { active, setActive } = useSectionTabs(SECTIONS);
 
   return (
     <div className="mx-auto max-w-7xl space-y-7 px-4 py-10 md:px-6">
