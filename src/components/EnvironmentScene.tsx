@@ -205,7 +205,9 @@ export function EnvironmentScene({
       <div
         className="absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, color-mix(in oklab, var(--color-background) 34%, transparent) 0%, color-mix(in oklab, var(--color-background) 58%, transparent) 46%, color-mix(in oklab, var(--color-background) 88%, transparent) 78%, var(--color-background) 100%)`,
+          background: site
+            ? `linear-gradient(to bottom, color-mix(in oklab, var(--color-background) 30%, transparent) 0%, color-mix(in oklab, var(--color-background) 62%, transparent) 42%, color-mix(in oklab, var(--color-background) 86%, transparent) 74%, color-mix(in oklab, var(--color-background) 94%, transparent) 100%)`
+            : `linear-gradient(to bottom, color-mix(in oklab, var(--color-background) 34%, transparent) 0%, color-mix(in oklab, var(--color-background) 58%, transparent) 46%, color-mix(in oklab, var(--color-background) 88%, transparent) 78%, var(--color-background) 100%)`,
           backdropFilter: atmo.haze > 0.4 ? "blur(2px)" : undefined,
         }}
       />
