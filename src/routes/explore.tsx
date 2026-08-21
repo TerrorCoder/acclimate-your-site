@@ -94,9 +94,9 @@ function ExplorePage() {
             ))}
           </section>
 
-          <section aria-labelledby="your-env" className="panel overflow-hidden">
+          <section id="your-env" aria-labelledby="your-env-h" className="panel scroll-mt-32 overflow-hidden">
             <div className="border-b border-border p-4">
-              <h2 id="your-env" className="display-md">
+              <h2 id="your-env-h" className="display-md">
                 Your environment
               </h2>
             </div>
