@@ -83,7 +83,7 @@ function TodayPage() {
       </section>
 
       <section id="parts" aria-labelledby="parts-h" className="scroll-mt-32 space-y-4">
-        <h2 id="parts" className="display-md">
+        <h2 id="parts-h" className="display-md">
           Across the day
         </h2>
         {!context ? (
