@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { AskAI } from "@/components/AskAI";
 import { AtmosphereTheme } from "@/components/AtmosphereTheme";
+import { EnvironmentScene } from "@/components/EnvironmentScene";
 import { EnvironmentProvider } from "@/lib/env/EnvironmentProvider";
 
 function NotFoundComponent() {
