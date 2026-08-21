@@ -6,7 +6,7 @@ import { DayTimeline } from "@/components/DayTimeline";
 import { EnvironmentScene } from "@/components/EnvironmentScene";
 import { LiveIndicator } from "@/components/LiveIndicator";
 import { LocationSelector } from "@/components/LocationSelector";
-import { SectionNav } from "@/components/SectionNav";
+import { SectionNav, SectionPanel, useSectionTabs } from "@/components/SectionNav";
 import { DailyBrief } from "@/components/features/DailyBrief";
 import { FoodCard } from "@/components/features/FoodCard";
 import { OutfitPlanner } from "@/components/features/OutfitPlanner";
@@ -32,8 +32,17 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const SECTIONS = [
+  { id: "brief", label: "Daily brief" },
+  { id: "activities", label: "Activities" },
+  { id: "conditions", label: "Conditions" },
+  { id: "timeline", label: "Timeline" },
+  { id: "outfit", label: "Outfit & food" },
+];
+
 function Home() {
   const { context, settings } = useEnvironment();
+  const { active, setActive } = useSectionTabs(SECTIONS);
 
   return (
     <>
@@ -57,12 +66,13 @@ function Home() {
             >
               Plan something
             </Link>
-            <a
-              href="#brief"
+            <button
+              type="button"
+              onClick={() => setActive("brief")}
               className="rounded-full border border-border px-4 py-2.5 text-sm transition-colors hover:bg-surface"
             >
               Read today's brief
-            </a>
+            </button>
           </div>
 
           {context && (
