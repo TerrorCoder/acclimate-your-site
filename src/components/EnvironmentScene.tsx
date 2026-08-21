@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useRef } from "react";
 
-import clearSky from "@/assets/sky/clear.png.asset.json";
-import fogSky from "@/assets/sky/fog.jpg.asset.json";
-import nightRainSky from "@/assets/sky/night-rain.jpg.asset.json";
-import nightSky from "@/assets/sky/night.png.asset.json";
-import overcastSky from "@/assets/sky/overcast.jpg.asset.json";
-import partlyCloudySky from "@/assets/sky/partly-cloudy.jpg.asset.json";
-import rainSky from "@/assets/sky/rain.png.asset.json";
-import snowSky from "@/assets/sky/snow.jpg.asset.json";
-import sunriseSky from "@/assets/sky/sunrise.jpg.asset.json";
-import sunsetSky from "@/assets/sky/sunset.jpg.asset.json";
-import thunderstormSky from "@/assets/sky/thunderstorm.png.asset.json";
+import clearSky from "@/assets/sky/clear.webp";
+import fogSky from "@/assets/sky/fog.jpg";
+import nightRainSky from "@/assets/sky/night-rain.jpg";
+import nightSky from "@/assets/sky/night.png";
+import overcastSky from "@/assets/sky/overcast.jpg";
+import partlyCloudySky from "@/assets/sky/partly-cloudy.jpg";
+import rainSky from "@/assets/sky/rain.png";
+import snowSky from "@/assets/sky/snow.jpg";
+import sunriseSky from "@/assets/sky/sunrise.jpg";
+import sunsetSky from "@/assets/sky/sunset.jpg";
+import thunderstormSky from "@/assets/sky/thunderstorm.png";
 import { atmosphereFor } from "@/lib/atmosphere";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
 
@@ -21,19 +21,22 @@ import { useEnvironment } from "@/lib/env/EnvironmentProvider";
  * conditions, animated with a very slow ken-burns drift so it feels alive without motion
  * sickness or GPU cost. A light particle canvas layers rain / snow / stars on top, and a
  * scrim fades the photo into the page background so text always stays readable.
+ *
+ * The images are bundled with the app (src/assets), so the site stays self-contained
+ * wherever it is hosted.
  */
 const SKY_IMAGES: Record<string, string> = {
-  clear: clearSky.url,
-  "partly-cloudy": partlyCloudySky.url,
-  overcast: overcastSky.url,
-  fog: fogSky.url,
-  rain: rainSky.url,
-  thunderstorm: thunderstormSky.url,
-  snow: snowSky.url,
-  night: nightSky.url,
-  "night-rain": nightRainSky.url,
-  sunrise: sunriseSky.url,
-  sunset: sunsetSky.url,
+  clear: clearSky,
+  "partly-cloudy": partlyCloudySky,
+  overcast: overcastSky,
+  fog: fogSky,
+  rain: rainSky,
+  thunderstorm: thunderstormSky,
+  snow: snowSky,
+  night: nightSky,
+  "night-rain": nightRainSky,
+  sunrise: sunriseSky,
+  sunset: sunsetSky,
 };
 
 export function EnvironmentScene({ height = "full" }: { height?: "full" | "short" }) {
