@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { SectionNav } from "@/components/SectionNav";
+
 import { ConditionsPanel } from "@/components/ConditionsPanel";
 import { DayTimeline } from "@/components/DayTimeline";
 import { AiLabel, DataLabel, ResponseCard } from "@/components/ai/ResponseCard";
@@ -67,11 +69,23 @@ function TodayPage() {
         </p>
       </header>
 
-      <ConditionsPanel />
-      <ActionChips domain="conditions" />
+      <SectionNav
+        items={[
+          { id: "now", label: "Right now" },
+          { id: "parts", label: "Across the day" },
+          { id: "timeline", label: "Timeline" },
+          { id: "recs", label: "Recommendations" },
+          { id: "outfit", label: "Outfit" },
+        ]}
+      />
 
-      <section aria-labelledby="parts" className="space-y-4">
-        <h2 id="parts" className="display-md">
+      <section id="now" className="scroll-mt-32 space-y-4">
+        <ConditionsPanel />
+        <ActionChips domain="conditions" />
+      </section>
+
+      <section id="parts" aria-labelledby="parts-h" className="scroll-mt-32 space-y-4">
+        <h2 id="parts-h" className="display-md">
           Across the day
         </h2>
         {!context ? (
@@ -114,17 +128,21 @@ function TodayPage() {
         )}
       </section>
 
-      <DayTimeline />
+      <section id="timeline" className="scroll-mt-32">
+        <DayTimeline />
+      </section>
 
-      <section aria-labelledby="recs" className="space-y-4">
-        <h2 id="recs" className="display-md">
+      <section id="recs" aria-labelledby="recs-h" className="scroll-mt-32 space-y-4">
+        <h2 id="recs-h" className="display-md">
           AI recommendations
         </h2>
         <ResponseCard response={brief.data} isLoading={brief.isFetching} headline="Today's plan" />
         <ActionChips domain="daily_brief" />
       </section>
 
-      <OutfitPlanner />
+      <section id="outfit" className="scroll-mt-32">
+        <OutfitPlanner />
+      </section>
     </div>
   );
 }

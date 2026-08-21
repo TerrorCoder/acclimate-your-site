@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+
+import { SectionNav } from "@/components/SectionNav";
 import { useMemo } from "react";
 
 import { PanelSkeleton } from "@/components/states";
@@ -52,11 +54,22 @@ function ExplorePage() {
         </p>
       </header>
 
+      <SectionNav
+        items={[
+          { id: "best-times", label: "Best times" },
+          { id: "your-env", label: "Your environment" },
+        ]}
+      />
+
       {!context ? (
         <PanelSkeleton lines={8} />
       ) : (
         <>
-          <section aria-label="Best times" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <section
+            id="best-times"
+            aria-label="Best times"
+            className="grid scroll-mt-32 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          >
             {windows.map((card) => (
               <article key={card.title} className="panel p-4">
                 <p className="eyebrow">{card.title}</p>
@@ -81,9 +94,9 @@ function ExplorePage() {
             ))}
           </section>
 
-          <section aria-labelledby="your-env" className="panel overflow-hidden">
+          <section id="your-env" aria-labelledby="your-env-h" className="panel scroll-mt-32 overflow-hidden">
             <div className="border-b border-border p-4">
-              <h2 id="your-env" className="display-md">
+              <h2 id="your-env-h" className="display-md">
                 Your environment
               </h2>
             </div>

@@ -6,6 +6,7 @@ import { DayTimeline } from "@/components/DayTimeline";
 import { EnvironmentScene } from "@/components/EnvironmentScene";
 import { LiveIndicator } from "@/components/LiveIndicator";
 import { LocationSelector } from "@/components/LocationSelector";
+import { SectionNav } from "@/components/SectionNav";
 import { DailyBrief } from "@/components/features/DailyBrief";
 import { FoodCard } from "@/components/features/FoodCard";
 import { OutfitPlanner } from "@/components/features/OutfitPlanner";
@@ -82,15 +83,32 @@ function Home() {
         </div>
       </section>
 
-      <div id="brief" className="mx-auto max-w-7xl space-y-5 px-4 pb-8 md:px-6">
-        <DailyBrief />
-        <ActivityGrid />
-        <ConditionsPanel />
-        <DayTimeline />
-        <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="mx-auto max-w-7xl space-y-5 px-4 pb-8 md:px-6">
+        <SectionNav
+          items={[
+            { id: "brief", label: "Daily brief" },
+            { id: "activities", label: "Activities" },
+            { id: "conditions", label: "Conditions" },
+            { id: "timeline", label: "Timeline" },
+            { id: "outfit", label: "Outfit & food" },
+          ]}
+        />
+        <section id="brief" className="scroll-mt-32">
+          <DailyBrief />
+        </section>
+        <section id="activities" className="scroll-mt-32">
+          <ActivityGrid />
+        </section>
+        <section id="conditions" className="scroll-mt-32">
+          <ConditionsPanel />
+        </section>
+        <section id="timeline" className="scroll-mt-32">
+          <DayTimeline />
+        </section>
+        <section id="outfit" className="grid scroll-mt-32 gap-4 lg:grid-cols-[1.4fr_1fr]">
           <OutfitPlanner />
           <FoodCard />
-        </div>
+        </section>
       </div>
     </>
   );

@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+
+import { SectionNav } from "@/components/SectionNav";
 import { useState } from "react";
 
 import { EventPlanner } from "@/components/features/EventPlanner";
@@ -48,7 +50,15 @@ function PlanPage() {
         </p>
       </header>
 
-      <div className="flex flex-wrap gap-2">
+      <SectionNav
+        items={[
+          { id: "choose", label: "What are you planning" },
+          { id: "assessment", label: "Assessment" },
+          { id: "outfit", label: "Outfit" },
+        ]}
+      />
+
+      <div id="choose" className="flex scroll-mt-32 flex-wrap gap-2">
         {CHOICES.map((c) => (
           <button
             key={c}
@@ -69,13 +79,21 @@ function PlanPage() {
 
       {choice === "Outdoor Event" ? (
         <>
-          <EventPlanner />
-          <OutfitPlanner withControls={false} />
+          <section id="assessment" className="scroll-mt-32">
+            <EventPlanner />
+          </section>
+          <section id="outfit" className="scroll-mt-32">
+            <OutfitPlanner withControls={false} />
+          </section>
         </>
       ) : (
         <div className="space-y-4">
-          <ResponseCard response={data} isLoading={isFetching || !data} headline={choice} />
-          <OutfitPlanner />
+          <section id="assessment" className="scroll-mt-32">
+            <ResponseCard response={data} isLoading={isFetching || !data} headline={choice} />
+          </section>
+          <section id="outfit" className="scroll-mt-32">
+            <OutfitPlanner />
+          </section>
         </div>
       )}
     </div>

@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { SectionNav } from "@/components/SectionNav";
+
 import { AiLabel, BasedOn } from "@/components/ai/ResponseCard";
 import { ActionChips } from "@/components/ai/ActionChips";
 import { PanelSkeleton } from "@/components/states";
@@ -40,12 +42,19 @@ function InsightsPage() {
         </p>
       </header>
 
+      <SectionNav
+        items={[
+          { id: "weekly", label: "Weekly outlook" },
+          { id: "ai-insights", label: "AI insights" },
+        ]}
+      />
+
       {!context ? (
         <PanelSkeleton lines={8} />
       ) : (
-        <section aria-labelledby="weekly" className="panel overflow-hidden">
+        <section id="weekly" aria-labelledby="weekly-h" className="panel scroll-mt-32 overflow-hidden">
           <div className="border-b border-border p-4">
-            <h2 id="weekly" className="display-md">
+            <h2 id="weekly-h" className="display-md">
               Weekly outlook
             </h2>
           </div>
@@ -86,9 +95,9 @@ function InsightsPage() {
         </section>
       )}
 
-      <section aria-labelledby="ai-insights" className="panel p-4 md:p-4">
+      <section id="ai-insights" aria-labelledby="ai-insights-h" className="panel scroll-mt-32 p-4 md:p-4">
         <AiLabel>AI insights</AiLabel>
-        <h2 id="ai-insights" className="display-md mt-1">
+        <h2 id="ai-insights-h" className="display-md mt-1">
           What the week actually means
         </h2>
         {isFetching || !data ? (
