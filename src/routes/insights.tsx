@@ -96,34 +96,33 @@ function InsightsPage() {
         </section>
       )}
 
-      <section id="ai-insights" aria-labelledby="ai-insights-h" className="panel scroll-mt-32 p-4 md:p-4">
-        <AiLabel>AI insights</AiLabel>
-        <h2 id="ai-insights-h" className="display-md mt-1">
-          What the week actually means
-        </h2>
-        {isFetching || !data ? (
-          <div className="mt-4 space-y-3">
-            <div className="skeleton h-3 w-full" />
-            <div className="skeleton h-3 w-10/12" />
-            <div className="skeleton h-3 w-9/12" />
-          </div>
-        ) : (
-          <>
-            <ol className="mt-3 space-y-4">
-              {data.whatToDo.map((item, i) => (
-                <li key={item} className="flex gap-4">
-                  <span className="numeric text-sm text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
-                  <p className="text-sm">{item}</p>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-3 text-sm text-muted-foreground">{data.why}</p>
-            <BasedOn sources={data.dataUsed} />
-          </>
-        )}
-      </section>
-
-      <ActionChips domain="weekly" />
+      <SectionPanel id="ai-insights" active={active} className="space-y-4">
+        <div className="panel p-4">
+          <AiLabel>AI insights</AiLabel>
+          <h2 className="display-md mt-1">What the week actually means</h2>
+          {isFetching || !data ? (
+            <div className="mt-4 space-y-3">
+              <div className="skeleton h-3 w-full" />
+              <div className="skeleton h-3 w-10/12" />
+              <div className="skeleton h-3 w-9/12" />
+            </div>
+          ) : (
+            <>
+              <ol className="mt-3 space-y-4">
+                {data.whatToDo.map((item, i) => (
+                  <li key={item} className="flex gap-4">
+                    <span className="numeric text-sm text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+                    <p className="text-sm">{item}</p>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-3 text-sm text-muted-foreground">{data.why}</p>
+              <BasedOn sources={data.dataUsed} />
+            </>
+          )}
+        </div>
+        <ActionChips domain="weekly" />
+      </SectionPanel>
     </div>
   );
 }
