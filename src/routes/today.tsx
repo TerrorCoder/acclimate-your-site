@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { SectionNav } from "@/components/SectionNav";
+import { SectionNav, SectionPanel, useSectionTabs } from "@/components/SectionNav";
 
 import { ConditionsPanel } from "@/components/ConditionsPanel";
 import { DayTimeline } from "@/components/DayTimeline";
@@ -53,9 +53,18 @@ function summarise(hours: HourPoint[], ctx: NormalizedContext): string {
   return `Comfortable and stable — around ${Math.round(hours[0]!.feelsLike)}°C with ${Math.round(rain)}% peak rain probability. This is usable time.`;
 }
 
+const SECTIONS = [
+  { id: "now", label: "Right now" },
+  { id: "parts", label: "Across the day" },
+  { id: "timeline", label: "Timeline" },
+  { id: "recs", label: "Recommendations" },
+  { id: "outfit", label: "Outfit" },
+];
+
 function TodayPage() {
   const { context, settings } = useEnvironment();
   const brief = useRecommendation("daily_brief");
+  const { active, setActive } = useSectionTabs(SECTIONS);
 
   return (
     <div className="mx-auto max-w-7xl space-y-7 px-4 py-10 md:px-6">
@@ -69,25 +78,15 @@ function TodayPage() {
         </p>
       </header>
 
-      <SectionNav
-        items={[
-          { id: "now", label: "Right now" },
-          { id: "parts", label: "Across the day" },
-          { id: "timeline", label: "Timeline" },
-          { id: "recs", label: "Recommendations" },
-          { id: "outfit", label: "Outfit" },
-        ]}
-      />
+      <SectionNav items={SECTIONS} active={active} onChange={setActive} />
 
-      <section id="now" className="scroll-mt-32 space-y-4">
+      <SectionPanel id="now" active={active} className="space-y-4">
         <ConditionsPanel />
         <ActionChips domain="conditions" />
-      </section>
+      </SectionPanel>
 
-      <section id="parts" aria-labelledby="parts-h" className="scroll-mt-32 space-y-4">
-        <h2 id="parts-h" className="display-md">
-          Across the day
-        </h2>
+      <SectionPanel id="parts" active={active} className="space-y-4">
+        <h2 className="display-md">Across the day</h2>
         {!context ? (
           <PanelSkeleton lines={8} />
         ) : (
@@ -126,23 +125,21 @@ function TodayPage() {
             })}
           </div>
         )}
-      </section>
+      </SectionPanel>
 
-      <section id="timeline" className="scroll-mt-32">
+      <SectionPanel id="timeline" active={active}>
         <DayTimeline />
-      </section>
+      </SectionPanel>
 
-      <section id="recs" aria-labelledby="recs-h" className="scroll-mt-32 space-y-4">
-        <h2 id="recs-h" className="display-md">
-          AI recommendations
-        </h2>
+      <SectionPanel id="recs" active={active} className="space-y-4">
+        <h2 className="display-md">AI recommendations</h2>
         <ResponseCard response={brief.data} isLoading={brief.isFetching} headline="Today's plan" />
         <ActionChips domain="daily_brief" />
-      </section>
+      </SectionPanel>
 
-      <section id="outfit" className="scroll-mt-32">
+      <SectionPanel id="outfit" active={active}>
         <OutfitPlanner />
-      </section>
+      </SectionPanel>
     </div>
   );
 }
