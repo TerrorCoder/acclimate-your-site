@@ -48,17 +48,12 @@ function InsightsPage() {
         </p>
       </header>
 
-      <SectionNav
-        items={[
-          { id: "weekly", label: "Weekly outlook" },
-          { id: "ai-insights", label: "AI insights" },
-        ]}
-      />
+      <SectionNav items={SECTIONS} active={active} onChange={setActive} />
 
-      {!context ? (
+      {active !== "weekly" ? null : !context ? (
         <PanelSkeleton lines={8} />
       ) : (
-        <section id="weekly" aria-labelledby="weekly-h" className="panel scroll-mt-32 overflow-hidden">
+        <section id="weekly" aria-labelledby="weekly-h" className="panel overflow-hidden">
           <div className="border-b border-border p-4">
             <h2 id="weekly-h" className="display-md">
               Weekly outlook
