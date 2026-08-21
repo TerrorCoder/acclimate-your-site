@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+
+import { SectionNav } from "@/components/SectionNav";
 import { useMemo } from "react";
 
 import { PanelSkeleton } from "@/components/states";

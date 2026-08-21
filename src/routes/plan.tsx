@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+
+import { SectionNav } from "@/components/SectionNav";
 import { useState } from "react";
 
 import { EventPlanner } from "@/components/features/EventPlanner";

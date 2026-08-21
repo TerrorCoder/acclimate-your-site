@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { SectionNav } from "@/components/SectionNav";
+
 import { ConditionsPanel } from "@/components/ConditionsPanel";
 import { DayTimeline } from "@/components/DayTimeline";
 import { AiLabel, DataLabel, ResponseCard } from "@/components/ai/ResponseCard";

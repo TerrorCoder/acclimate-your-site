@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { SectionNav } from "@/components/SectionNav";
+
 import { AiLabel, BasedOn } from "@/components/ai/ResponseCard";
 import { ActionChips } from "@/components/ai/ActionChips";
 import { PanelSkeleton } from "@/components/states";
