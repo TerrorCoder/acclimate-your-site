@@ -143,7 +143,9 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <EnvironmentProvider>
         <AtmosphereTheme />
-        <div className="flex min-h-screen flex-col">
+        {/* The live sky is the backdrop for the whole site, not just the landing page. */}
+        <EnvironmentScene variant="site" />
+        <div className="relative flex min-h-screen flex-col">
           <SiteHeader />
           <main className="flex-1">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
