@@ -66,10 +66,9 @@ function ExplorePage() {
         <PanelSkeleton lines={8} />
       ) : (
         <>
-          <section
+          {active === "best-times" && <section
             id="best-times"
             aria-label="Best times"
-            hidden={active !== "best-times"}
             className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
             {windows.map((card) => (
@@ -96,7 +95,7 @@ function ExplorePage() {
             ))}
           </section>
 
-          <section id="your-env" hidden={active !== "your-env"} aria-labelledby="your-env-h" className="panel overflow-hidden">
+          {active === "your-env" && <section id="your-env" aria-labelledby="your-env-h" className="panel overflow-hidden">
             <div className="border-b border-border p-4">
               <h2 id="your-env-h" className="display-md">
                 Your environment
