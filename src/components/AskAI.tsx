@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useChatSession } from "@/lib/ai/useChatSession";
-import { hasOpenAI, type ChatMessage } from "@/lib/ai/openai";
+import { getActiveAIStatus } from "@/lib/ai/aiProvider";
 import { SUGGESTED_QUESTIONS } from "@/lib/ai/getRecommendation";
 import { ResponseCard } from "@/components/ai/ResponseCard";
 import { EmptyState } from "@/components/states";
@@ -88,7 +88,12 @@ export function AskAI({ initialQuestion, onInitialQuestionConsumed }: AskAIProps
             <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border p-4">
               <div>
                 <p className="eyebrow" style={{ color: "var(--color-ai)" }}>
-                  {hasOpenAI ? "GPT-4o-mini · Evidence-based" : "Evidence-based assistant"}
+                  {(() => {
+                    const st = getActiveAIStatus();
+                    if (st.provider === "gemini") return "Gemini 2.0 Flash · Evidence-based";
+                    if (st.provider === "openai") return "GPT-4o-mini · Evidence-based";
+                    return "Evidence-based assistant";
+                  })()}
                 </p>
                 <h2 className="display-md mt-1">Ask about today</h2>
                 <p className="mt-1 text-sm text-muted-foreground">

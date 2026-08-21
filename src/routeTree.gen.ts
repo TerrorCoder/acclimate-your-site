@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as OverviewRouteImport } from './routes/overview'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TodayRouteImport } from './routes/today'
@@ -29,6 +30,11 @@ const ExploreRoute = ExploreRouteImport.update({
 const InsightsRoute = InsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewRoute = OverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlanRoute = PlanRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/insights': typeof InsightsRoute
+  '/overview': typeof OverviewRoute
   '/plan': typeof PlanRoute
   '/settings': typeof SettingsRoute
   '/today': typeof TodayRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/insights': typeof InsightsRoute
+  '/overview': typeof OverviewRoute
   '/plan': typeof PlanRoute
   '/settings': typeof SettingsRoute
   '/today': typeof TodayRoute
@@ -68,20 +76,36 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/insights': typeof InsightsRoute
+  '/overview': typeof OverviewRoute
   '/plan': typeof PlanRoute
   '/settings': typeof SettingsRoute
   '/today': typeof TodayRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/explore' | '/insights' | '/plan' | '/settings' | '/today'
+  fullPaths:
+    | '/'
+    | '/explore'
+    | '/insights'
+    | '/overview'
+    | '/plan'
+    | '/settings'
+    | '/today'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/explore' | '/insights' | '/plan' | '/settings' | '/today'
+  to:
+    | '/'
+    | '/explore'
+    | '/insights'
+    | '/overview'
+    | '/plan'
+    | '/settings'
+    | '/today'
   id:
     | '__root__'
     | '/'
     | '/explore'
     | '/insights'
+    | '/overview'
     | '/plan'
     | '/settings'
     | '/today'
@@ -91,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExploreRoute: typeof ExploreRoute
   InsightsRoute: typeof InsightsRoute
+  OverviewRoute: typeof OverviewRoute
   PlanRoute: typeof PlanRoute
   SettingsRoute: typeof SettingsRoute
   TodayRoute: typeof TodayRoute
@@ -117,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/insights'
       fullPath: '/insights'
       preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview': {
+      id: '/overview'
+      path: '/overview'
+      fullPath: '/overview'
+      preLoaderRoute: typeof OverviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plan': {
@@ -147,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExploreRoute: ExploreRoute,
   InsightsRoute: InsightsRoute,
+  OverviewRoute: OverviewRoute,
   PlanRoute: PlanRoute,
   SettingsRoute: SettingsRoute,
   TodayRoute: TodayRoute,
@@ -154,13 +187,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

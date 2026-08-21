@@ -1,59 +1,64 @@
 /**
- * Thin OpenAI client wrapper.
- *
- * Reads VITE_OPENAI_API_KEY from the Vite env. If the key is absent the
- * helper returns null so the deterministic fallback in getRecommendation.ts
- * takes over automatically — no crashes, no user-facing errors.
- *
- * Uses the official openai SDK with dangerouslyAllowBrowser: true because
- * this is intentional client-side usage during development. When moving to
- * a static host the call should be proxied through a Cloudflare Worker.
+ * Standard REST-based OpenAI client.
+ * Zero custom wrapper overhead — clean standard fetch.
  */
-
-import OpenAI from "openai";
-
-const API_KEY = import.meta.env['VITE_OPENAI_API_KEY'] as string | undefined;
-
-let _client: OpenAI | null = null;
-
-function getClient(): OpenAI | null {
-  if (!API_KEY) return null;
-  if (!_client) {
-    _client = new OpenAI({
-      apiKey: API_KEY,
-      dangerouslyAllowBrowser: true,
-    });
-  }
-  return _client;
-}
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
 
-/**
- * Send a message thread to GPT-4o-mini and return the raw text response.
- * Returns null if the key is missing or the request fails — caller falls back
- * to the deterministic engine.
- */
-export async function callOpenAI(messages: ChatMessage[]): Promise<string | null> {
-  const client = getClient();
-  if (!client) return null;
+export interface OpenAIOptions {
+  apiKey?: string;
+  model?: string;
+}
+
+export async function callOpenAI(
+  messages: ChatMessage[],
+  options: OpenAIOptions = {},
+): Promise<string | null> {
+  const apiKey =
+    options.apiKey ||
+    (typeof window !== "undefined" ? localStorage.getItem("acclimate_openai_key") || undefined : undefined) ||
+    (import.meta.env['VITE_OPENAI_API_KEY'] as string | undefined);
+
+  if (!apiKey) {
+    console.warn("[Acclimate/AI] No OpenAI API key found.");
+    return null;
+  }
 
   try {
-    const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages,
-      response_format: { type: "json_object" },
-      temperature: 0.4, // low temperature keeps responses factual and consistent
-      max_tokens: 900,
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey.trim()}`,
+      },
+      body: JSON.stringify({
+        model: options.model || "gpt-4o-mini",
+        messages,
+        response_format: { type: "json_object" },
+        temperature: 0.3,
+        max_tokens: 1200,
+      }),
     });
-    return completion.choices[0]?.message?.content ?? null;
-  } catch (err) {
-    console.warn("[Acclimate/AI] OpenAI request failed, using deterministic fallback:", err);
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.warn(`[Acclimate/AI] OpenAI API error (${res.status}):`, errText);
+      return null;
+    }
+
+    const data = await res.json();
+    const content = data?.choices?.[0]?.message?.content;
+    return content ?? null;
+  } catch (err: any) {
+    console.warn("[Acclimate/AI] OpenAI network error:", err?.message || err);
     return null;
   }
 }
 
-export const hasOpenAI = Boolean(API_KEY);
+export const hasOpenAI = Boolean(
+  (typeof window !== "undefined" && localStorage.getItem("acclimate_openai_key")) ||
+    import.meta.env['VITE_OPENAI_API_KEY'],
+);

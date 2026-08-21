@@ -18,7 +18,7 @@ import {
   tempWord,
   verdictFromScore,
 } from "./reasoning";
-import { callOpenAI, hasOpenAI } from "./openai";
+import { executeAIInference } from "./aiProvider";
 import {
   buildDailyBriefPrompt,
   buildActivityPrompt,
@@ -27,6 +27,7 @@ import {
   buildFoodPrompt,
   buildInsightPrompt,
   buildAskAiPrompt,
+  buildDayPartsPrompt,
 } from "./prompts";
 
 export interface RecommendationOptions {
@@ -44,26 +45,20 @@ export interface RecommendationOptions {
  * The single AI integration point for the whole product.
  *
  * Priority:
- *  1. Call GPT-4o-mini with a grounded system prompt → parse StructuredResponse JSON
- *  2. If OpenAI is unavailable (no key, network error, bad parse) → fall through
- *     to the deterministic reasoning engine below. Zero UI regression.
- *
- * The deterministic functions remain intact as the fallback and local-dev path.
+ *  1. Call live AI model (Gemini 2.0 Flash / OpenAI GPT-4o-mini) with grounded system prompt
+ *  2. If AI model is unavailable or key is missing → fallback to deterministic engine safely.
  */
 export async function getRecommendation(
   taskType: TaskType,
   context: NormalizedContext,
   options: RecommendationOptions = {},
 ): Promise<StructuredResponse> {
-  // ── Tier 1: Try OpenAI ─────────────────────────────────────────────────────
-  if (hasOpenAI) {
-    const aiResult = await tryOpenAI(taskType, context, options);
-    if (aiResult) return { ...aiResult, aiPowered: true } as StructuredResponse;
-  }
+  // ── Tier 1: Try Live AI Model (Gemini / OpenAI) ───────────────────────────
+  const aiResult = await tryLiveAI(taskType, context, options);
+  if (aiResult) return aiResult;
 
   // ── Tier 2: Deterministic fallback ─────────────────────────────────────────
-  // Small artificial delay so loading skeletons are visible even in fallback mode
-  await new Promise((r) => setTimeout(r, 300 + Math.random() * 200));
+  await new Promise((r) => setTimeout(r, 200 + Math.random() * 150));
 
   switch (taskType) {
     case "daily_brief":
@@ -78,16 +73,18 @@ export async function getRecommendation(
       return food(context);
     case "insight":
       return insight(context);
+    case "day_parts":
+      return dayPartsFallback(context);
     case "ask_ai":
       return askAi(context, options.question ?? "");
   }
 }
 
 /* -------------------------------------------------------------------------- */
-/*  OpenAI integration                                                         */
+/*  Live AI Integration (Gemini / OpenAI)                                     */
 /* -------------------------------------------------------------------------- */
 
-async function tryOpenAI(
+async function tryLiveAI(
   taskType: TaskType,
   context: NormalizedContext,
   options: RecommendationOptions,
@@ -114,6 +111,9 @@ async function tryOpenAI(
       case "insight":
         systemPrompt = buildInsightPrompt(context);
         break;
+      case "day_parts":
+        systemPrompt = buildDayPartsPrompt(context);
+        break;
       case "ask_ai":
         systemPrompt = buildAskAiPrompt(
           context,
@@ -125,16 +125,41 @@ async function tryOpenAI(
         return null;
     }
 
-    const rawText = await callOpenAI([
-      { role: "system", content: systemPrompt },
-      { role: "user", content: "Generate the JSON response now." },
-    ]);
+    const { text, provider } = await executeAIInference(
+      systemPrompt,
+      taskType === "ask_ai" ? (options.question ?? "Analyze today") : "Generate the JSON response now.",
+      options.chatHistory ?? [],
+    );
 
-    if (!rawText) return null;
+    if (!text || provider === "fallback") return null;
 
-    const parsed = JSON.parse(rawText) as Partial<StructuredResponse>;
+    const parsed = JSON.parse(text);
 
-    // Validate required fields — if key fields missing, fall back gracefully
+    // Special handling for day_parts task
+    if (taskType === "day_parts") {
+      const parts: Record<string, string> = {
+        Morning: parsed.Morning || parsed.morning || "Pleasant morning atmospheric progression.",
+        Afternoon: parsed.Afternoon || parsed.afternoon || "Peak solar load and thermal shifts.",
+        Evening: parsed.Evening || parsed.evening || "Cooling curve setting in towards dusk.",
+        Night: parsed.Night || parsed.night || "Settled nocturnal conditions.",
+      };
+      return {
+        title: "Across the day",
+        recommendation: "GO",
+        confidence: confidenceFor(context),
+        bestTime: "06:00–22:00",
+        mainConsideration: "Atmospheric shifts across morning, afternoon, evening, and night",
+        risks: buildRisks(context, context.todayHours),
+        whatToDo: Object.entries(parts).map(([k, v]) => `${k}: ${v}`),
+        why: "Live AI multi-period atmospheric analysis.",
+        dataUsed: dataUsed(context),
+        extras: parts,
+        aiPowered: true,
+        aiProvider: provider,
+      };
+    }
+
+    // Validate standard fields
     if (
       !parsed.recommendation ||
       !parsed.bestTime ||
@@ -142,11 +167,9 @@ async function tryOpenAI(
       !Array.isArray(parsed.whatToDo) ||
       !parsed.why
     ) {
-      console.warn("[Acclimate/AI] OpenAI response missing required fields, using fallback");
       return null;
     }
 
-    // Merge with defaults for optional fields that might be missing
     return {
       title: parsed.title ?? "AI Recommendation",
       recommendation: parsed.recommendation,
@@ -160,15 +183,17 @@ async function tryOpenAI(
       score: typeof parsed.score === "number" ? parsed.score : undefined,
       scoreLabel: parsed.scoreLabel,
       extras: parsed.extras,
+      aiPowered: true,
+      aiProvider: provider,
     };
   } catch (err) {
-    console.warn("[Acclimate/AI] OpenAI parse/request error, using fallback:", err);
+    console.warn("[Acclimate/AI] Live AI parse error, using fallback:", err);
     return null;
   }
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Deterministic fallback engine (unchanged from original)                   */
+/*  Deterministic fallback engine                                             */
 /* -------------------------------------------------------------------------- */
 
 const ACTIVITY_PROFILE: Record<string, string> = {
@@ -184,6 +209,29 @@ const ACTIVITY_PROFILE: Record<string, string> = {
 
 function hourNum(time: string) {
   return Number(time.slice(0, 2));
+}
+
+function dayPartsFallback(ctx: NormalizedContext): StructuredResponse {
+  const parts: Record<string, string> = {
+    Morning: "Crisp early progression transitioning from overnight lows into active daylight.",
+    Afternoon: "Solar load peaks near midday; humidity and ambient temperature dictate usable outdoor comfort.",
+    Evening: "Steady radiational cooling curves settle as dusk approaches sunset.",
+    Night: "Nocturnal air stabilizes with cooling temperatures and minimal convective activity.",
+  };
+  return {
+    title: "Across the day",
+    recommendation: "GO",
+    confidence: confidenceFor(ctx),
+    bestTime: "06:00–22:00",
+    mainConsideration: "Conditions shift across daylight hours",
+    risks: buildRisks(ctx, ctx.todayHours),
+    whatToDo: Object.values(parts),
+    why: "Hour-by-hour atmospheric transitions.",
+    dataUsed: dataUsed(ctx),
+    extras: parts,
+    aiPowered: false,
+    aiProvider: "fallback",
+  };
 }
 
 /* ------------------------------- daily brief ------------------------------- */
@@ -237,6 +285,8 @@ function dailyBrief(ctx: NormalizedContext): StructuredResponse {
         .map((r) => r.name)
         .join(" · ") || "Nothing significant",
     },
+    aiPowered: false,
+    aiProvider: "fallback",
   };
 }
 
@@ -313,6 +363,8 @@ function activity(ctx: NormalizedContext, name: string): StructuredResponse {
     dataUsed: dataUsed(ctx),
     score: win.score,
     scoreLabel: scoreLabel(win.score),
+    aiPowered: false,
+    aiProvider: "fallback",
   };
 }
 
@@ -400,6 +452,8 @@ function eventReadiness(ctx: NormalizedContext, options: RecommendationOptions):
       ],
       clothing: outfitLines(ctx, { formality: "Smart casual", indoor: false }),
     },
+    aiPowered: false,
+    aiProvider: "fallback",
   };
 }
 
@@ -470,6 +524,8 @@ function outfit(ctx: NormalizedContext, options: RecommendationOptions): Structu
     dataUsed: dataUsed(ctx),
     score,
     scoreLabel: `${tempWord(ctx.current.feelsLike).toUpperCase()} · ${options.formality ?? "Casual"}`,
+    aiPowered: false,
+    aiProvider: "fallback",
   };
 }
 
@@ -500,6 +556,8 @@ function food(ctx: NormalizedContext): StructuredResponse {
     whatToDo: suggestions,
     why: `At ${Math.round(f)}°C feels-like with ${Math.round(ctx.current.humidity)}% humidity, ${f >= 27 ? "lighter, hydrating food is easier to handle" : "warmer food matches the conditions better"}.`,
     dataUsed: dataUsed(ctx),
+    aiPowered: false,
+    aiProvider: "fallback",
   };
 }
 
@@ -547,6 +605,8 @@ function insight(ctx: NormalizedContext): StructuredResponse {
     dataUsed: dataUsed(ctx),
     score: best.score,
     scoreLabel: scoreLabel(best.score),
+    aiPowered: false,
+    aiProvider: "fallback",
   };
 }
 
@@ -594,6 +654,8 @@ function askAi(ctx: NormalizedContext, question: string): StructuredResponse {
       dataUsed: dataUsed(ctx),
       score: win.score,
       scoreLabel: scoreLabel(win.score),
+      aiPowered: false,
+      aiProvider: "fallback",
     };
   }
   return { ...dailyBrief(ctx), title: question || "Your day" };

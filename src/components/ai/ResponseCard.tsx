@@ -124,7 +124,14 @@ export function ResponseCard({
     <article className="panel rise-in p-4 md:p-4">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <AiLabel>{headline ?? response.title ?? "AI recommendation"}</AiLabel>
+          <AiLabel>
+            {headline ?? response.title ?? "AI recommendation"}
+            {response.aiPowered && (
+              <span className="ml-1.5 opacity-75 font-normal">
+                · {response.aiProvider === "gemini" ? "Gemini" : response.aiProvider === "openai" ? "GPT-4o-mini" : "Live AI"}
+              </span>
+            )}
+          </AiLabel>
           <p className="display-md mt-1">{response.mainConsideration}</p>
         </div>
         <VerdictBadge verdict={response.recommendation} confidence={response.confidence} />

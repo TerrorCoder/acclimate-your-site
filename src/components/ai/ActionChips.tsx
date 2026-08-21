@@ -11,7 +11,7 @@
 
 import { useEffect, useState } from "react";
 
-import { callOpenAI } from "@/lib/ai/openai";
+import { executeAIInference } from "@/lib/ai/aiProvider";
 import { buildActionChipsPrompt } from "@/lib/ai/prompts";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
 
@@ -32,14 +32,11 @@ export function ActionChips({ domain }: ActionChipsProps) {
 
     const prompt = buildActionChipsPrompt(context, domain);
 
-    callOpenAI([
-      { role: "system", content: prompt },
-      { role: "user", content: "Return the chips JSON now." },
-    ])
-      .then((raw) => {
-        if (cancelled || !raw) return;
+    executeAIInference(prompt, "Return the chips JSON now.")
+      .then(({ text }) => {
+        if (cancelled || !text) return;
         try {
-          const parsed = JSON.parse(raw) as { chips?: string[] };
+          const parsed = JSON.parse(text) as { chips?: string[] };
           if (Array.isArray(parsed.chips)) {
             setChips(parsed.chips.slice(0, 3));
           }
