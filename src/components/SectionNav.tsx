@@ -1,36 +1,59 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type SectionItem = { id: string; label: string };
 
 /**
- * Sticky in-page section rail.
+ * Hash-synced tab state for in-page "sections as pages".
  *
- * Shows every section of the page as a pill so people can see what's below the fold
- * and jump straight to it instead of scrolling. Scroll-spy keeps the active pill in
- * sync, and the rail scrolls horizontally on narrow screens.
+ * Sections are no longer scrolled to — clicking a pill swaps the rendered view,
+ * exactly like navigating between routes in the header. The URL hash keeps the
+ * active view shareable and back/forward friendly.
  */
-export function SectionNav({ items, label = "Sections" }: { items: SectionItem[]; label?: string }) {
-  const [active, setActive] = useState(items[0]?.id ?? "");
-  const railRef = useRef<HTMLDivElement>(null);
+export function useSectionTabs(items: SectionItem[], initial?: string) {
+  const fallback = initial ?? items[0]?.id ?? "";
+  const [active, setActiveState] = useState(fallback);
 
   useEffect(() => {
-    const targets = items
-      .map((i) => document.getElementById(i.id))
-      .filter((el): el is HTMLElement => Boolean(el));
-    if (!targets.length) return;
+    const ids = items.map((i) => i.id);
+    const apply = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash && ids.includes(hash)) setActiveState(hash);
+    };
+    apply();
+    window.addEventListener("hashchange", apply);
+    return () => window.removeEventListener("hashchange", apply);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.map((i) => i.id).join("|")]);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-        if (visible) setActive(visible.target.id);
-      },
-      { rootMargin: "-118px 0px -55% 0px", threshold: [0, 0.15, 0.5] },
-    );
-    targets.forEach((t) => observer.observe(t));
-    return () => observer.disconnect();
-  }, [items]);
+  const setActive = useCallback((id: string) => {
+    setActiveState(id);
+    if (typeof window !== "undefined") {
+      history.replaceState(null, "", `#${id}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, []);
+
+  return { active, setActive };
+}
+
+/**
+ * Sticky section switcher.
+ *
+ * Behaves like a secondary header: always visible, always showing every view of
+ * the page, and clicking swaps the content instead of scrolling to it.
+ */
+export function SectionNav({
+  items,
+  active,
+  onChange,
+  label = "Sections",
+}: {
+  items: SectionItem[];
+  active: string;
+  onChange: (id: string) => void;
+  label?: string;
+}) {
+  const railRef = useRef<HTMLDivElement>(null);
 
   // Keep the active pill in view on the horizontal rail.
   useEffect(() => {
@@ -41,15 +64,6 @@ export function SectionNav({ items, label = "Sections" }: { items: SectionItem[]
     rail.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
   }, [active]);
 
-  const go = (id: string) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - 116;
-    window.scrollTo({ top, behavior: "smooth" });
-    setActive(id);
-    history.replaceState(null, "", `#${id}`);
-  };
-
   return (
     <nav
       aria-label={label}
@@ -57,6 +71,8 @@ export function SectionNav({ items, label = "Sections" }: { items: SectionItem[]
     >
       <div
         ref={railRef}
+        role="tablist"
+        aria-label={label}
         className="flex snap-x items-center gap-1.5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((item, i) => {
@@ -65,9 +81,12 @@ export function SectionNav({ items, label = "Sections" }: { items: SectionItem[]
             <button
               key={item.id}
               type="button"
+              role="tab"
+              id={`tab-${item.id}`}
+              aria-selected={on}
+              aria-controls={`panel-${item.id}`}
               data-pill={item.id}
-              onClick={() => go(item.id)}
-              aria-current={on ? "true" : undefined}
+              onClick={() => onChange(item.id)}
               className={`group flex shrink-0 snap-start items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-all duration-200 ${
                 on
                   ? "border-transparent bg-primary text-primary-foreground shadow-sm"
@@ -87,5 +106,30 @@ export function SectionNav({ items, label = "Sections" }: { items: SectionItem[]
         })}
       </div>
     </nav>
+  );
+}
+
+/** Wrapper for a single switchable view. */
+export function SectionPanel({
+  id,
+  active,
+  className,
+  children,
+}: {
+  id: string;
+  active: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  if (id !== active) return null;
+  return (
+    <section
+      id={`panel-${id}`}
+      role="tabpanel"
+      aria-labelledby={`tab-${id}`}
+      className={`animate-in fade-in duration-300 ${className ?? ""}`}
+    >
+      {children}
+    </section>
   );
 }
