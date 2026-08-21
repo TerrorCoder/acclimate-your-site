@@ -4,6 +4,7 @@ import { SectionNav, SectionPanel, useSectionTabs } from "@/components/SectionNa
 import { useState } from "react";
 
 import { EventPlanner } from "@/components/features/EventPlanner";
+import { OutfitPlanner } from "@/components/features/OutfitPlanner";
 import { ResponseCard } from "@/components/ai/ResponseCard";
 import { useRecommendation } from "@/lib/ai/useRecommendation";
 
@@ -38,6 +39,7 @@ const ACTIVITY_MAP: Record<string, string> = {
 const SECTIONS = [
   { id: "choose", label: "What are you planning" },
   { id: "assessment", label: "Assessment" },
+  { id: "outfit", label: "Outfit" },
 ];
 
 function PlanPage() {
@@ -99,6 +101,9 @@ function PlanPage() {
         )}
       </SectionPanel>
 
+      <SectionPanel id="outfit" active={active}>
+        <OutfitPlanner withControls={choice !== "Outdoor Event"} />
+      </SectionPanel>
     </div>
   );
 }

@@ -1,6 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import { ActivityGrid } from "@/components/ActivityGrid";
+import { ConditionsPanel } from "@/components/ConditionsPanel";
+import { DayTimeline } from "@/components/DayTimeline";
+import { EnvironmentScene } from "@/components/EnvironmentScene";
 import { LiveIndicator } from "@/components/LiveIndicator";
+import { LocationSelector } from "@/components/LocationSelector";
+import { SectionNav, SectionPanel, useSectionTabs } from "@/components/SectionNav";
+import { DailyBrief } from "@/components/features/DailyBrief";
+import { FoodCard } from "@/components/features/FoodCard";
+import { OutfitPlanner } from "@/components/features/OutfitPlanner";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
 import { formatTemp } from "@/lib/env/format";
 
@@ -23,84 +32,86 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-/**
- * Landing page = one screen.
- *
- * Everything that used to be stacked below the fold (brief, activities, conditions,
- * timeline, outfit) now lives on /today, where it is switchable by tab. The home page
- * is purely the live sky, the headline, the current read-out and the doors into the app.
- */
-const DOORS = [
-  { to: "/today", label: "Today", note: "Brief, activities, conditions, timeline, outfit" },
-  { to: "/plan", label: "Plan", note: "Score an event against the real forecast" },
-  { to: "/explore", label: "Explore", note: "Best windows for each thing you do" },
-  { to: "/insights", label: "Insights", note: "The week ahead, in trends" },
-] as const;
+const SECTIONS = [
+  { id: "brief", label: "Daily brief" },
+  { id: "activities", label: "Activities" },
+  { id: "conditions", label: "Conditions" },
+  { id: "timeline", label: "Timeline" },
+  { id: "outfit", label: "Outfit & food" },
+];
 
 function Home() {
   const { context, settings } = useEnvironment();
+  const { active, setActive } = useSectionTabs(SECTIONS);
 
   return (
-    <section className="relative isolate">
-      <div className="mx-auto flex min-h-[calc(100vh-72px)] max-w-7xl flex-col justify-center px-4 py-10 md:px-6">
-        <LiveIndicator className="mb-4" />
-        <h1 className="display-xl max-w-4xl">What can you do today?</h1>
-        <p className="mt-3 max-w-xl text-base text-foreground/80">
-          Your day, interpreted through the world around you.
-        </p>
-        <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-          Weather apps tell you what the weather is. Acclimate tells you what to do about it.
-        </p>
+    <>
+      <section className="relative isolate overflow-hidden">
+        <EnvironmentScene />
+        <div className="relative mx-auto flex min-h-[58vh] max-w-7xl flex-col justify-center px-4 py-10 md:px-6">
+          <LiveIndicator className="mb-4" />
+          <h1 className="display-xl max-w-4xl">What can you do today?</h1>
+          <p className="mt-3 max-w-xl text-base text-foreground/80">
+            Your day, interpreted through the world around you.
+          </p>
+          <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+            Weather apps tell you what the weather is. Acclimate tells you what to do about it.
+          </p>
 
-        <div className="mt-6 flex flex-wrap items-center gap-2.5">
-          <Link
-            to="/today"
-            className="rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
-          >
-            Read today's brief
-          </Link>
-          <Link
-            to="/plan"
-            className="rounded-full border border-border px-4 py-2.5 text-sm transition-colors hover:bg-surface"
-          >
-            Plan something
-          </Link>
-        </div>
-
-        {context && (
-          <dl className="mt-8 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-4">
-            {[
-              { k: "Now", v: formatTemp(context.current.temperature, settings) },
-              { k: "Feels", v: formatTemp(context.current.feelsLike, settings) },
-              { k: "Sky", v: context.current.description },
-              { k: "Sunset", v: context.sun.sunset.slice(0, 5) },
-            ].map((item) => (
-              <div key={item.k}>
-                <dt className="eyebrow">{item.k}</dt>
-                <dd className="numeric mt-1 text-lg">{item.v}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-
-        <nav aria-label="Sections" className="mt-10 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-          {DOORS.map((door) => (
+          <div className="mt-6 flex flex-wrap items-center gap-2.5">
+            <LocationSelector />
             <Link
-              key={door.to}
-              to={door.to}
-              className="panel-quiet group p-3 transition-all duration-300 hover:-translate-y-0.5 hover:bg-surface-strong"
+              to="/plan"
+              className="rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
             >
-              <span className="flex items-center justify-between text-sm font-medium">
-                {door.label}
-                <span className="opacity-40 transition-transform group-hover:translate-x-0.5">
-                  →
-                </span>
-              </span>
-              <span className="mt-1 block text-xs text-muted-foreground">{door.note}</span>
+              Plan something
             </Link>
-          ))}
-        </nav>
+            <button
+              type="button"
+              onClick={() => setActive("brief")}
+              className="rounded-full border border-border px-4 py-2.5 text-sm transition-colors hover:bg-surface"
+            >
+              Read today's brief
+            </button>
+          </div>
+
+          {context && (
+            <dl className="mt-8 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-4">
+              {[
+                { k: "Now", v: formatTemp(context.current.temperature, settings) },
+                { k: "Feels", v: formatTemp(context.current.feelsLike, settings) },
+                { k: "Sky", v: context.current.description },
+                { k: "Sunset", v: context.sun.sunset.slice(0, 5) },
+              ].map((item) => (
+                <div key={item.k}>
+                  <dt className="eyebrow">{item.k}</dt>
+                  <dd className="numeric mt-1 text-lg">{item.v}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-7xl space-y-5 px-4 pb-8 md:px-6">
+        <SectionNav items={SECTIONS} active={active} onChange={setActive} />
+        <SectionPanel id="brief" active={active}>
+          <DailyBrief />
+        </SectionPanel>
+        <SectionPanel id="activities" active={active}>
+          <ActivityGrid />
+        </SectionPanel>
+        <SectionPanel id="conditions" active={active}>
+          <ConditionsPanel />
+        </SectionPanel>
+        <SectionPanel id="timeline" active={active}>
+          <DayTimeline />
+        </SectionPanel>
+        <SectionPanel id="outfit" active={active} className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+          <OutfitPlanner />
+          <FoodCard />
+        </SectionPanel>
       </div>
-    </section>
+    </>
   );
 }

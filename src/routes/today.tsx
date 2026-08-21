@@ -2,15 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { SectionNav, SectionPanel, useSectionTabs } from "@/components/SectionNav";
 
-import { ActivityGrid } from "@/components/ActivityGrid";
 import { ConditionsPanel } from "@/components/ConditionsPanel";
 import { DayTimeline } from "@/components/DayTimeline";
-import { AiLabel, DataLabel } from "@/components/ai/ResponseCard";
+import { AiLabel, DataLabel, ResponseCard } from "@/components/ai/ResponseCard";
 import { ActionChips } from "@/components/ai/ActionChips";
-import { DailyBrief } from "@/components/features/DailyBrief";
-import { FoodCard } from "@/components/features/FoodCard";
 import { OutfitPlanner } from "@/components/features/OutfitPlanner";
 import { PanelSkeleton } from "@/components/states";
+import { useRecommendation } from "@/lib/ai/useRecommendation";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
 import { formatSpeed, formatTemp } from "@/lib/env/format";
 import type { HourPoint, NormalizedContext } from "@/lib/env/types";
@@ -22,7 +20,7 @@ export const Route = createFileRoute("/today")({
       {
         name: "description",
         content:
-          "Your daily brief, what you can do, live conditions, an hour-by-hour timeline and what to wear and eat — all built from live data.",
+          "Morning, afternoon, evening and night broken down by temperature, rain, wind, UV and air quality, each with a plain-language interpretation.",
       },
       { property: "og:title", content: "Today, interpreted — Acclimate" },
       {
@@ -62,39 +60,40 @@ function summarise(hours: HourPoint[], ctx: NormalizedContext): string {
 }
 
 const SECTIONS = [
-  { id: "brief", label: "Daily brief" },
-  { id: "activities", label: "Activities" },
-  { id: "conditions", label: "Conditions" },
+  { id: "now", label: "Right now" },
+  { id: "parts", label: "Across the day" },
   { id: "timeline", label: "Timeline" },
-  { id: "outfit", label: "Outfit & food" },
+  { id: "recs", label: "Recommendations" },
+  { id: "outfit", label: "Outfit" },
 ];
 
 function TodayPage() {
   const { context, settings } = useEnvironment();
+  const brief = useRecommendation("daily_brief");
   const { active, setActive } = useSectionTabs(SECTIONS);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5 px-4 py-8 md:px-6">
+    <div className="mx-auto max-w-7xl space-y-7 px-4 py-10 md:px-6">
       <header className="max-w-3xl">
         <p className="eyebrow">Today</p>
-        <h1 className="display-lg mt-1.5">
+        <h1 className="display-lg mt-2">
           {context ? `${context.location.name}, hour by hour` : "Loading your day"}
         </h1>
+        <p className="mt-3 text-muted-foreground">
+          Factual conditions on the left of every block, interpretation on the right. Nothing is
+          invented.
+        </p>
       </header>
 
       <SectionNav items={SECTIONS} active={active} onChange={setActive} />
 
-      <SectionPanel id="brief" active={active} className="space-y-4">
-        <DailyBrief />
-        <ActionChips domain="daily_brief" />
-      </SectionPanel>
-
-      <SectionPanel id="activities" active={active}>
-        <ActivityGrid />
-      </SectionPanel>
-
-      <SectionPanel id="conditions" active={active} className="space-y-4">
+      <SectionPanel id="now" active={active} className="space-y-4">
         <ConditionsPanel />
+        <ActionChips domain="conditions" />
+      </SectionPanel>
+
+      <SectionPanel id="parts" active={active} className="space-y-4">
+        <h2 className="display-md">Across the day</h2>
         {!context ? (
           <PanelSkeleton lines={8} />
         ) : (
@@ -148,16 +147,20 @@ function TodayPage() {
             })}
           </div>
         )}
-        <ActionChips domain="conditions" />
       </SectionPanel>
 
       <SectionPanel id="timeline" active={active}>
         <DayTimeline />
       </SectionPanel>
 
-      <SectionPanel id="outfit" active={active} className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <SectionPanel id="recs" active={active} className="space-y-4">
+        <h2 className="display-md">AI recommendations</h2>
+        <ResponseCard response={brief.data} isLoading={brief.isFetching} headline="Today's plan" />
+        <ActionChips domain="daily_brief" />
+      </SectionPanel>
+
+      <SectionPanel id="outfit" active={active}>
         <OutfitPlanner />
-        <FoodCard />
       </SectionPanel>
     </div>
   );
