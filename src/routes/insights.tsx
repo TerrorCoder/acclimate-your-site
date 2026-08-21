@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { AiLabel, BasedOn } from "@/components/ai/ResponseCard";
+import { ActionChips } from "@/components/ai/ActionChips";
 import { PanelSkeleton } from "@/components/states";
 import { useRecommendation } from "@/lib/ai/useRecommendation";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
@@ -111,6 +112,8 @@ function InsightsPage() {
           </>
         )}
       </section>
+
+      <ActionChips domain="weekly" />
     </div>
   );
 }

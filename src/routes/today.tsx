@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ConditionsPanel } from "@/components/ConditionsPanel";
 import { DayTimeline } from "@/components/DayTimeline";
 import { AiLabel, DataLabel, ResponseCard } from "@/components/ai/ResponseCard";
+import { ActionChips } from "@/components/ai/ActionChips";
 import { OutfitPlanner } from "@/components/features/OutfitPlanner";
 import { PanelSkeleton } from "@/components/states";
 import { useRecommendation } from "@/lib/ai/useRecommendation";
@@ -67,6 +68,7 @@ function TodayPage() {
       </header>
 
       <ConditionsPanel />
+      <ActionChips domain="conditions" />
 
       <section aria-labelledby="parts" className="space-y-4">
         <h2 id="parts" className="display-md">
@@ -119,6 +121,7 @@ function TodayPage() {
           AI recommendations
         </h2>
         <ResponseCard response={brief.data} isLoading={brief.isFetching} headline="Today's plan" />
+        <ActionChips domain="daily_brief" />
       </section>
 
       <OutfitPlanner />

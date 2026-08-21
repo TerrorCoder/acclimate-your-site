@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -127,6 +127,17 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [chipQuestion, setChipQuestion] = useState<string | undefined>();
+
+  // Listen for ActionChip clicks dispatched as custom events
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const question = (e as CustomEvent<string>).detail;
+      if (question) setChipQuestion(question);
+    };
+    window.addEventListener("acclimate:ask", handler);
+    return () => window.removeEventListener("acclimate:ask", handler);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -140,7 +151,10 @@ function RootComponent() {
           </main>
           <SiteFooter />
         </div>
-        <AskAI />
+        <AskAI
+          initialQuestion={chipQuestion}
+          onInitialQuestionConsumed={() => setChipQuestion(undefined)}
+        />
       </EnvironmentProvider>
     </QueryClientProvider>
   );

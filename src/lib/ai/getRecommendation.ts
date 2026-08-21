@@ -18,6 +18,16 @@ import {
   tempWord,
   verdictFromScore,
 } from "./reasoning";
+import { callOpenAI, hasOpenAI } from "./openai";
+import {
+  buildDailyBriefPrompt,
+  buildActivityPrompt,
+  buildEventReadinessPrompt,
+  buildOutfitPrompt,
+  buildFoodPrompt,
+  buildInsightPrompt,
+  buildAskAiPrompt,
+} from "./prompts";
 
 export interface RecommendationOptions {
   activity?: string;
@@ -26,22 +36,35 @@ export interface RecommendationOptions {
   indoor?: boolean;
   timeOverride?: { start: string; end: string };
   date?: string;
+  /** Internal: prior chat messages for multi-turn AskAI */
+  chatHistory?: { role: "user" | "assistant"; content: string }[];
 }
 
 /**
  * The single AI integration point for the whole product.
  *
- * Today it runs a deterministic reasoning engine over the normalized environmental
- * context (a mock that behaves exactly like the eventual provider). When a real model
- * is connected, only this file changes — every feature calls this function and renders
- * the same StructuredResponse.
+ * Priority:
+ *  1. Call GPT-4o-mini with a grounded system prompt → parse StructuredResponse JSON
+ *  2. If OpenAI is unavailable (no key, network error, bad parse) → fall through
+ *     to the deterministic reasoning engine below. Zero UI regression.
+ *
+ * The deterministic functions remain intact as the fallback and local-dev path.
  */
 export async function getRecommendation(
   taskType: TaskType,
   context: NormalizedContext,
   options: RecommendationOptions = {},
 ): Promise<StructuredResponse> {
-  await new Promise((r) => setTimeout(r, 420 + Math.random() * 380));
+  // ── Tier 1: Try OpenAI ─────────────────────────────────────────────────────
+  if (hasOpenAI) {
+    const aiResult = await tryOpenAI(taskType, context, options);
+    if (aiResult) return { ...aiResult, aiPowered: true } as StructuredResponse;
+  }
+
+  // ── Tier 2: Deterministic fallback ─────────────────────────────────────────
+  // Small artificial delay so loading skeletons are visible even in fallback mode
+  await new Promise((r) => setTimeout(r, 300 + Math.random() * 200));
+
   switch (taskType) {
     case "daily_brief":
       return dailyBrief(context);
@@ -60,7 +83,93 @@ export async function getRecommendation(
   }
 }
 
-/* --------------------------------- helpers -------------------------------- */
+/* -------------------------------------------------------------------------- */
+/*  OpenAI integration                                                         */
+/* -------------------------------------------------------------------------- */
+
+async function tryOpenAI(
+  taskType: TaskType,
+  context: NormalizedContext,
+  options: RecommendationOptions,
+): Promise<StructuredResponse | null> {
+  try {
+    let systemPrompt: string;
+
+    switch (taskType) {
+      case "daily_brief":
+        systemPrompt = buildDailyBriefPrompt(context);
+        break;
+      case "activity":
+        systemPrompt = buildActivityPrompt(context, options.activity ?? "Go Outside");
+        break;
+      case "event_readiness":
+        systemPrompt = buildEventReadinessPrompt(context, options);
+        break;
+      case "outfit":
+        systemPrompt = buildOutfitPrompt(context, options);
+        break;
+      case "food":
+        systemPrompt = buildFoodPrompt(context);
+        break;
+      case "insight":
+        systemPrompt = buildInsightPrompt(context);
+        break;
+      case "ask_ai":
+        systemPrompt = buildAskAiPrompt(
+          context,
+          options.question ?? "",
+          options.chatHistory ?? [],
+        );
+        break;
+      default:
+        return null;
+    }
+
+    const rawText = await callOpenAI([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: "Generate the JSON response now." },
+    ]);
+
+    if (!rawText) return null;
+
+    const parsed = JSON.parse(rawText) as Partial<StructuredResponse>;
+
+    // Validate required fields — if key fields missing, fall back gracefully
+    if (
+      !parsed.recommendation ||
+      !parsed.bestTime ||
+      !Array.isArray(parsed.risks) ||
+      !Array.isArray(parsed.whatToDo) ||
+      !parsed.why
+    ) {
+      console.warn("[Acclimate/AI] OpenAI response missing required fields, using fallback");
+      return null;
+    }
+
+    // Merge with defaults for optional fields that might be missing
+    return {
+      title: parsed.title ?? "AI Recommendation",
+      recommendation: parsed.recommendation,
+      confidence: parsed.confidence ?? confidenceFor(context),
+      bestTime: parsed.bestTime,
+      mainConsideration: parsed.mainConsideration ?? "",
+      risks: parsed.risks,
+      whatToDo: parsed.whatToDo,
+      why: parsed.why,
+      dataUsed: parsed.dataUsed ?? dataUsed(context),
+      score: typeof parsed.score === "number" ? parsed.score : undefined,
+      scoreLabel: parsed.scoreLabel,
+      extras: parsed.extras,
+    };
+  } catch (err) {
+    console.warn("[Acclimate/AI] OpenAI parse/request error, using fallback:", err);
+    return null;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Deterministic fallback engine (unchanged from original)                   */
+/* -------------------------------------------------------------------------- */
 
 const ACTIVITY_PROFILE: Record<string, string> = {
   "Go Outside": "outdoors",
