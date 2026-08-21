@@ -6,6 +6,7 @@ import { DayTimeline } from "@/components/DayTimeline";
 import { EnvironmentScene } from "@/components/EnvironmentScene";
 import { LiveIndicator } from "@/components/LiveIndicator";
 import { LocationSelector } from "@/components/LocationSelector";
+import { SectionNav } from "@/components/SectionNav";
 import { DailyBrief } from "@/components/features/DailyBrief";
 import { FoodCard } from "@/components/features/FoodCard";
 import { OutfitPlanner } from "@/components/features/OutfitPlanner";
