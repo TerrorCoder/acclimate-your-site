@@ -39,7 +39,14 @@ const SKY_IMAGES: Record<string, string> = {
   sunset: sunsetSky,
 };
 
-export function EnvironmentScene({ height = "full" }: { height?: "full" | "short" }) {
+export function EnvironmentScene({
+  height = "full",
+  variant = "inline",
+}: {
+  height?: "full" | "short";
+  /** "site" pins the sky behind the entire app; "inline" scopes it to a section. */
+  variant?: "inline" | "site";
+}) {
   const { context } = useEnvironment();
   const atmo = useMemo(() => atmosphereFor(context), [context]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -156,12 +163,18 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
     };
   }, [state, night, light, intensity, wind]);
 
+  const site = variant === "site";
+
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute inset-x-0 top-0 overflow-hidden ${
-        height === "full" ? "h-[86vh]" : "h-[42vh]"
-      }`}
+      className={
+        site
+          ? "pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+          : `pointer-events-none absolute inset-x-0 top-0 overflow-hidden ${
+              height === "full" ? "h-[86vh]" : "h-[42vh]"
+            }`
+      }
       style={{ backgroundColor: atmo.sky2 }}
     >
       {/* High-detail photographic sky, cross-faded per condition and very slowly drifting. */}
@@ -192,7 +205,9 @@ export function EnvironmentScene({ height = "full" }: { height?: "full" | "short
       <div
         className="absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, color-mix(in oklab, var(--color-background) 34%, transparent) 0%, color-mix(in oklab, var(--color-background) 58%, transparent) 46%, color-mix(in oklab, var(--color-background) 88%, transparent) 78%, var(--color-background) 100%)`,
+          background: site
+            ? `linear-gradient(to bottom, color-mix(in oklab, var(--color-background) 30%, transparent) 0%, color-mix(in oklab, var(--color-background) 62%, transparent) 42%, color-mix(in oklab, var(--color-background) 86%, transparent) 74%, color-mix(in oklab, var(--color-background) 94%, transparent) 100%)`
+            : `linear-gradient(to bottom, color-mix(in oklab, var(--color-background) 34%, transparent) 0%, color-mix(in oklab, var(--color-background) 58%, transparent) 46%, color-mix(in oklab, var(--color-background) 88%, transparent) 78%, var(--color-background) 100%)`,
           backdropFilter: atmo.haze > 0.4 ? "blur(2px)" : undefined,
         }}
       />

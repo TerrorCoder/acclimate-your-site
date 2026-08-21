@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { AskAI } from "@/components/AskAI";
 import { AtmosphereTheme } from "@/components/AtmosphereTheme";
+import { EnvironmentScene } from "@/components/EnvironmentScene";
 import { EnvironmentProvider } from "@/lib/env/EnvironmentProvider";
 
 function NotFoundComponent() {
@@ -143,7 +144,9 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <EnvironmentProvider>
         <AtmosphereTheme />
-        <div className="flex min-h-screen flex-col">
+        {/* The live sky is the backdrop for the whole site, not just the landing page. */}
+        <EnvironmentScene variant="site" />
+        <div className="relative flex min-h-screen flex-col">
           <SiteHeader />
           <main className="flex-1">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}

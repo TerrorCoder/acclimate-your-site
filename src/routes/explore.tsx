@@ -5,7 +5,7 @@ import { useMemo } from "react";
 
 import { PanelSkeleton } from "@/components/states";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
-import { formatDistance, formatRange, formatSpeed, formatTime } from "@/lib/env/format";
+import { formatDistance, formatRange, formatTime } from "@/lib/env/format";
 import { bestWindow } from "@/lib/ai/reasoning";
 
 export const Route = createFileRoute("/explore")({
@@ -39,7 +39,7 @@ const CARDS = [
 
 const SECTIONS = [
   { id: "best-times", label: "Best times" },
-  { id: "your-env", label: "Your environment" },
+  { id: "sun-moon", label: "Sun & moon" },
 ];
 
 function ExplorePage() {
@@ -101,44 +101,18 @@ function ExplorePage() {
             </section>
           )}
 
-          {active === "your-env" && (
-            <section id="your-env" aria-labelledby="your-env-h" className="panel overflow-hidden">
+          {active === "sun-moon" && (
+            <section id="sun-moon" aria-labelledby="sun-moon-h" className="panel overflow-hidden">
               <div className="border-b border-border p-4">
-                <h2 id="your-env-h" className="display-md">
-                  Your environment
+                <h2 id="sun-moon-h" className="display-md">
+                  Sun &amp; moon
                 </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  The light schedule behind every window above. Live weather metrics live on Today.
+                </p>
               </div>
               <dl className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-4">
                 {[
-                  {
-                    k: "Air quality",
-                    v: context.airQuality.available
-                      ? (context.airQuality.aqiLabel ?? "—")
-                      : "Unavailable",
-                    n: context.airQuality.available
-                      ? `PM2.5 ${context.airQuality.measurements.find((m) => m.parameter === "PM2.5")?.value.toFixed(1)} µg/m³`
-                      : "No nearby station data",
-                  },
-                  {
-                    k: "Weather",
-                    v: context.current.description,
-                    n: `${Math.round(context.current.cloudCover)}% cloud`,
-                  },
-                  {
-                    k: "UV",
-                    v: context.current.uvIndex.toFixed(1),
-                    n: context.current.uvIndex >= 6 ? "Protection advised" : "Low exposure",
-                  },
-                  {
-                    k: "Wind",
-                    v: formatSpeed(context.current.windSpeed, settings),
-                    n: `Gusts ${formatSpeed(context.current.windGusts, settings)}`,
-                  },
-                  {
-                    k: "Visibility",
-                    v: formatDistance(context.current.visibility, settings),
-                    n: context.current.visibility < 6 ? "Reduced" : "Clear",
-                  },
                   {
                     k: "Sunrise",
                     v: formatTime(context.sun.sunrise, settings),
@@ -158,6 +132,11 @@ function ExplorePage() {
                     v: context.moon.phase ?? "—",
                     n: `${context.moon.illumination ?? 0}% illuminated`,
                   },
+                  {
+                    k: "Visibility",
+                    v: formatDistance(context.current.visibility, settings),
+                    n: context.current.visibility < 6 ? "Reduced" : "Clear",
+                  },
                 ].map((item) => (
                   <div key={item.k} className="bg-card p-4">
                     <dt className="eyebrow">{item.k}</dt>
@@ -169,6 +148,7 @@ function ExplorePage() {
               <p className="eyebrow p-4">Sources: {context.sources.join(" · ")}</p>
             </section>
           )}
+
         </>
       )}
     </div>
