@@ -26,7 +26,7 @@ export function SectionNav({ items, label = "Sections" }: { items: SectionItem[]
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
         if (visible) setActive(visible.target.id);
       },
-      { rootMargin: "-136px 0px -60% 0px", threshold: [0, 0.15, 0.5] },
+      { rootMargin: "-118px 0px -55% 0px", threshold: [0, 0.15, 0.5] },
     );
     targets.forEach((t) => observer.observe(t));
     return () => observer.disconnect();
