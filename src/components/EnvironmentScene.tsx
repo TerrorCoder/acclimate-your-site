@@ -39,7 +39,14 @@ const SKY_IMAGES: Record<string, string> = {
   sunset: sunsetSky,
 };
 
-export function EnvironmentScene({ height = "full" }: { height?: "full" | "short" }) {
+export function EnvironmentScene({
+  height = "full",
+  variant = "inline",
+}: {
+  height?: "full" | "short";
+  /** "site" pins the sky behind the entire app; "inline" scopes it to a section. */
+  variant?: "inline" | "site";
+}) {
   const { context } = useEnvironment();
   const atmo = useMemo(() => atmosphereFor(context), [context]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
