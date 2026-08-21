@@ -67,10 +67,22 @@ function TodayPage() {
         </p>
       </header>
 
-      <ConditionsPanel />
-      <ActionChips domain="conditions" />
+      <SectionNav
+        items={[
+          { id: "now", label: "Right now" },
+          { id: "parts", label: "Across the day" },
+          { id: "timeline", label: "Timeline" },
+          { id: "recs", label: "Recommendations" },
+          { id: "outfit", label: "Outfit" },
+        ]}
+      />
 
-      <section aria-labelledby="parts" className="space-y-4">
+      <section id="now" className="scroll-mt-32 space-y-4">
+        <ConditionsPanel />
+        <ActionChips domain="conditions" />
+      </section>
+
+      <section id="parts" aria-labelledby="parts-h" className="scroll-mt-32 space-y-4">
         <h2 id="parts" className="display-md">
           Across the day
         </h2>
