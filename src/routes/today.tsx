@@ -126,17 +126,21 @@ function TodayPage() {
         )}
       </section>
 
-      <DayTimeline />
+      <section id="timeline" className="scroll-mt-32">
+        <DayTimeline />
+      </section>
 
-      <section aria-labelledby="recs" className="space-y-4">
-        <h2 id="recs" className="display-md">
+      <section id="recs" aria-labelledby="recs-h" className="scroll-mt-32 space-y-4">
+        <h2 id="recs-h" className="display-md">
           AI recommendations
         </h2>
         <ResponseCard response={brief.data} isLoading={brief.isFetching} headline="Today's plan" />
         <ActionChips domain="daily_brief" />
       </section>
 
-      <OutfitPlanner />
+      <section id="outfit" className="scroll-mt-32">
+        <OutfitPlanner />
+      </section>
     </div>
   );
 }
