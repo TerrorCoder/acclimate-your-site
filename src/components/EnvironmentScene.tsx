@@ -163,12 +163,18 @@ export function EnvironmentScene({
     };
   }, [state, night, light, intensity, wind]);
 
+  const site = variant === "site";
+
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute inset-x-0 top-0 overflow-hidden ${
-        height === "full" ? "h-[86vh]" : "h-[42vh]"
-      }`}
+      className={
+        site
+          ? "pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+          : `pointer-events-none absolute inset-x-0 top-0 overflow-hidden ${
+              height === "full" ? "h-[86vh]" : "h-[42vh]"
+            }`
+      }
       style={{ backgroundColor: atmo.sky2 }}
     >
       {/* High-detail photographic sky, cross-faded per condition and very slowly drifting. */}
