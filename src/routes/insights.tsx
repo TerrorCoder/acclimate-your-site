@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { SectionNav } from "@/components/SectionNav";
+import { SectionNav, SectionPanel, useSectionTabs } from "@/components/SectionNav";
 
 import { AiLabel, BasedOn } from "@/components/ai/ResponseCard";
 import { ActionChips } from "@/components/ai/ActionChips";
@@ -21,16 +21,23 @@ export const Route = createFileRoute("/insights")({
       { property: "og:title", content: "Weekly outlook & insights — Acclimate" },
       {
         property: "og:description",
-        content: "How conditions move across the week, and which day is genuinely the best one to be outside.",
+        content:
+          "How conditions move across the week, and which day is genuinely the best one to be outside.",
       },
     ],
   }),
   component: InsightsPage,
 });
 
+const SECTIONS = [
+  { id: "weekly", label: "Weekly outlook" },
+  { id: "ai-insights", label: "AI insights" },
+];
+
 function InsightsPage() {
   const { context, settings } = useEnvironment();
   const { data, isFetching } = useRecommendation("insight");
+  const { active, setActive } = useSectionTabs(SECTIONS);
 
   return (
     <div className="mx-auto max-w-7xl space-y-7 px-4 py-10 md:px-6">
@@ -42,17 +49,12 @@ function InsightsPage() {
         </p>
       </header>
 
-      <SectionNav
-        items={[
-          { id: "weekly", label: "Weekly outlook" },
-          { id: "ai-insights", label: "AI insights" },
-        ]}
-      />
+      <SectionNav items={SECTIONS} active={active} onChange={setActive} />
 
-      {!context ? (
+      {active !== "weekly" ? null : !context ? (
         <PanelSkeleton lines={8} />
       ) : (
-        <section id="weekly" aria-labelledby="weekly-h" className="panel scroll-mt-32 overflow-hidden">
+        <section id="weekly" aria-labelledby="weekly-h" className="panel overflow-hidden">
           <div className="border-b border-border p-4">
             <h2 id="weekly-h" className="display-md">
               Weekly outlook
@@ -62,7 +64,10 @@ function InsightsPage() {
             {context.daily.map((day) => {
               const suitability = Math.max(
                 0,
-                Math.min(100, Math.round(100 - day.rainProbability * 0.5 - Math.abs(day.tempMax - 24) * 2)),
+                Math.min(
+                  100,
+                  Math.round(100 - day.rainProbability * 0.5 - Math.abs(day.tempMax - 24) * 2),
+                ),
               );
               return (
                 <li key={day.date} className="bg-card p-4">
@@ -74,20 +79,32 @@ function InsightsPage() {
                   <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-surface-strong">
                     <div
                       className="h-full rounded-full"
-                      style={{ width: `${Math.max(3, day.rainProbability)}%`, background: "var(--color-data)" }}
+                      style={{
+                        width: `${Math.max(3, day.rainProbability)}%`,
+                        background: "var(--color-data)",
+                      }}
                     />
                   </div>
-                  <p className="mt-1.5 text-xs text-muted-foreground">{Math.round(day.rainProbability)}% rain</p>
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    {Math.round(day.rainProbability)}% rain
+                  </p>
                   <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-surface-strong">
                     <div
                       className="h-full rounded-full"
                       style={{
                         width: `${suitability}%`,
-                        background: suitability >= 70 ? "var(--color-good)" : suitability >= 45 ? "var(--color-warn)" : "var(--color-bad)",
+                        background:
+                          suitability >= 70
+                            ? "var(--color-good)"
+                            : suitability >= 45
+                              ? "var(--color-warn)"
+                              : "var(--color-bad)",
                       }}
                     />
                   </div>
-                  <p className="mt-1.5 text-xs text-muted-foreground">Outdoor suitability {suitability}</p>
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    Outdoor suitability {suitability}
+                  </p>
                 </li>
               );
             })}
@@ -95,34 +112,35 @@ function InsightsPage() {
         </section>
       )}
 
-      <section id="ai-insights" aria-labelledby="ai-insights-h" className="panel scroll-mt-32 p-4 md:p-4">
-        <AiLabel>AI insights</AiLabel>
-        <h2 id="ai-insights-h" className="display-md mt-1">
-          What the week actually means
-        </h2>
-        {isFetching || !data ? (
-          <div className="mt-4 space-y-3">
-            <div className="skeleton h-3 w-full" />
-            <div className="skeleton h-3 w-10/12" />
-            <div className="skeleton h-3 w-9/12" />
-          </div>
-        ) : (
-          <>
-            <ol className="mt-3 space-y-4">
-              {data.whatToDo.map((item, i) => (
-                <li key={item} className="flex gap-4">
-                  <span className="numeric text-sm text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
-                  <p className="text-sm">{item}</p>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-3 text-sm text-muted-foreground">{data.why}</p>
-            <BasedOn sources={data.dataUsed} />
-          </>
-        )}
-      </section>
-
-      <ActionChips domain="weekly" />
+      <SectionPanel id="ai-insights" active={active} className="space-y-4">
+        <div className="panel p-4">
+          <AiLabel>AI insights</AiLabel>
+          <h2 className="display-md mt-1">What the week actually means</h2>
+          {isFetching || !data ? (
+            <div className="mt-4 space-y-3">
+              <div className="skeleton h-3 w-full" />
+              <div className="skeleton h-3 w-10/12" />
+              <div className="skeleton h-3 w-9/12" />
+            </div>
+          ) : (
+            <>
+              <ol className="mt-3 space-y-4">
+                {data.whatToDo.map((item, i) => (
+                  <li key={item} className="flex gap-4">
+                    <span className="numeric text-sm text-muted-foreground">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <p className="text-sm">{item}</p>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-3 text-sm text-muted-foreground">{data.why}</p>
+              <BasedOn sources={data.dataUsed} />
+            </>
+          )}
+        </div>
+        <ActionChips domain="weekly" />
+      </SectionPanel>
     </div>
   );
 }
