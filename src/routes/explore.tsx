@@ -36,8 +36,14 @@ const CARDS = [
   { title: "Stargazing", key: "stargazing", length: 3, note: "Cloud cover permitting" },
 ] as const;
 
+const SECTIONS = [
+  { id: "best-times", label: "Best times" },
+  { id: "your-env", label: "Your environment" },
+];
+
 function ExplorePage() {
   const { context, settings } = useEnvironment();
+  const { active, setActive } = useSectionTabs(SECTIONS);
 
   const windows = useMemo(
     () => (context ? CARDS.map((c) => ({ ...c, win: bestWindow(context, c.key, c.length) })) : []),
@@ -54,12 +60,7 @@ function ExplorePage() {
         </p>
       </header>
 
-      <SectionNav
-        items={[
-          { id: "best-times", label: "Best times" },
-          { id: "your-env", label: "Your environment" },
-        ]}
-      />
+      <SectionNav items={SECTIONS} active={active} onChange={setActive} />
 
       {!context ? (
         <PanelSkeleton lines={8} />
@@ -68,7 +69,8 @@ function ExplorePage() {
           <section
             id="best-times"
             aria-label="Best times"
-            className="grid scroll-mt-32 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            hidden={active !== "best-times"}
+            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
             {windows.map((card) => (
               <article key={card.title} className="panel p-4">
@@ -94,7 +96,7 @@ function ExplorePage() {
             ))}
           </section>
 
-          <section id="your-env" aria-labelledby="your-env-h" className="panel scroll-mt-32 overflow-hidden">
+          <section id="your-env" hidden={active !== "your-env"} aria-labelledby="your-env-h" className="panel overflow-hidden">
             <div className="border-b border-border p-4">
               <h2 id="your-env-h" className="display-md">
                 Your environment
