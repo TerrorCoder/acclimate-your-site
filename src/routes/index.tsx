@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { EnvironmentScene } from "@/components/EnvironmentScene";
 import { LiveIndicator } from "@/components/LiveIndicator";
-import { LocationSelector } from "@/components/LocationSelector";
 import { useEnvironment } from "@/lib/env/EnvironmentProvider";
 import { formatTemp } from "@/lib/env/format";
 
@@ -42,7 +41,6 @@ function Home() {
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <LocationSelector />
           <Link
             to="/overview"
             className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5"
