@@ -1,3 +1,20 @@
+Acclimate
+Copyright (c) 2025-2026 Acclimate Contributors
+
+This software is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+
+================================================================================
+COMMERCIAL LICENSING & NEGOTIATION NOTICE
+================================================================================
+Use of this software for commercial purposes under terms other than the GNU AGPLv3
+(including proprietary closed-source integration, SaaS deployment without AGPL
+copyleft obligations, or custom enterprise terms) can be negotiated.
+
+If your organization requires a commercial license, proprietary waiver, custom
+support, or dual-licensing agreement, please contact the project authors /
+copyright holders to discuss terms.
+================================================================================
+
 GNU AFFERO GENERAL PUBLIC LICENSE
 Version 3, 19 November 2007
 
@@ -203,3 +220,11 @@ IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY C
 If the disclaimer of warranty and limitation of liability provided above cannot be given local legal effect according to their terms, reviewing courts shall apply local law that most closely approximates an absolute waiver of all civil liability in connection with the Program, unless a warranty or assumption of liability accompanies a copy of the Program in exchange for a fee.
 
 END OF TERMS AND CONDITIONS
+
+--------------------------------------------------------------------------------
+Commercial Licensing & Alternative Terms
+--------------------------------------------------------------------------------
+Commercial use, closed-source integration, or deployment without the copyleft
+obligations of the GNU AGPLv3 is available under a separate commercial license.
+Commercial terms can be negotiated directly with the copyright holders.
+--------------------------------------------------------------------------------
