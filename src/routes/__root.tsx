@@ -83,6 +83,20 @@ function RootComponent() {
 
   // Client-side Title & Meta synchronization across SPA navigation
   useEffect(() => {
+    const canonicalUrl = new URL(window.location.pathname, "https://acclimate.kairosgroup.co.zw");
+    const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    const openGraphUrl = document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
+    const robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
+
+    canonical?.setAttribute("href", canonicalUrl.href);
+    openGraphUrl?.setAttribute("content", canonicalUrl.href);
+    robots?.setAttribute(
+      "content",
+      window.location.pathname === "/settings"
+        ? "noindex, follow"
+        : "index, follow, max-image-preview:large",
+    );
+
     for (let i = matches.length - 1; i >= 0; i--) {
       const match = matches[i] as any;
       const head = match?.options?.head || match?.head || match?.routeContext?.head;
